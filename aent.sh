@@ -2,4 +2,4 @@
 
 set -xe
 
-# TODO CALL HERE THE PHP SCRIPT
+php /src/aent.php run "$@"

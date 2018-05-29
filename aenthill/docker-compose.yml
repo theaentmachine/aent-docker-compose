@@ -1,0 +1,23 @@
+version: '3'
+# This is an example
+services:
+  web: # my web container
+    build: .
+    ports:
+    - 5000:5000
+    volumes:
+    - .:/code
+    - logvolume01:/var/log
+    links:
+    - redis
+  redis:
+    image: redis
+  toto:
+    volumes:
+    - soefseofes
+    - feskfpsfse
+    - fsefsf
+volumes:
+  logvolume01: {}
+  mysql_data:
+    driver: local

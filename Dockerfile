@@ -12,13 +12,30 @@ LABEL authors="Julien Neuhart <j.neuhart@thecodingmachine.com>"
 ENV SHELL "/bin/sh"
 
 # Installs missing libraries.
-RUN apk add --no-cache wget tar
+RUN apk add --no-cache --update \
+    wget \
+    tar \
+    python \
+    python-dev \
+    py-pip \
+    build-base &&\
+    pip install ruamel.yaml
 
 # Installs Docker client.
 ENV DOCKER_VERSION "18.03.1-ce"
 RUN wget -qO- https://download.docker.com/linux/static/stable/x86_64/docker-$DOCKER_VERSION.tgz | tar xvz -C . &&\
     mv ./docker/docker /usr/bin &&\
     rm -rf ./docker
+
+# Installs yaml-tools
+RUN wget -q https://raw.githubusercontent.com/thecodingmachine/yaml-tools/master/src/yaml_tools.py -O /usr/bin/yaml-tools &&\
+    chmod +x /usr/bin/yaml-tools
+
+# Installs Hermes.
+ENV HERMES_VERSION "0.0.2"
+RUN wget -qO- https://github.com/aenthill/hermes/releases/download/$HERMES_VERSION/hermes_linux_amd64.tar.gz | tar xvz -C . &&\
+    mv ./hermes /usr/bin &&\
+    rm -f LICENSE README.md
 
 # Copies our aent entry point.
 COPY aent.sh /usr/bin/aent
@@ -27,4 +44,4 @@ COPY aent.sh /usr/bin/aent
 COPY --from=builder /usr/src/app/vendor ./vendor
 
 # Copies our PHP source.
-COPY src ./src
+COPY ./src ./src

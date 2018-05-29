@@ -14,4 +14,42 @@
 
 ---
 
-TODO
+## events
+
+### new-docker-service
+`$ aent new-docker-service PAYLOAD`
+
+Payload format (JSON) :
+```
+{
+  "serviceName" : "foo",
+  "service": {
+    "image"         : "foo",
+    "internalPorts" : [123],
+    "dependsOn"     : ["foo"],
+    "ports"         : [{"source": 80, "target": 8080}],
+    "labels"        : [{"key": "foo", "value": "bar"}],
+    "environments"   : [{"key": "FOO", "value": "bar"}],
+    "volumes": [
+      {
+        "type"        : "volume|bind|tmpfs",
+        "source"	  : "foo",
+        "target"	  : "bar",
+        "readOnly"    : true
+      }
+    ]
+  }
+}
+```
+
+### delete-docker-service
+`$ aent delete-docker-service PAYLOAD`
+
+Payload format (JSON) :
+```
+{
+  "serviceName" : "foo",
+  "namedVolume" : ["bar"]
+}
+```
+
