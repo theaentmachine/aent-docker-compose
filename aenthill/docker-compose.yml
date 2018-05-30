@@ -12,12 +12,5 @@ services:
     - redis
   redis:
     image: redis
-  toto:
-    volumes:
-    - soefseofes
-    - feskfpsfse
-    - fsefsf
 volumes:
   logvolume01: {}
-  mysql_data:
-    driver: local

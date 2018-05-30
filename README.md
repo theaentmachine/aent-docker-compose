@@ -1,4 +1,4 @@
-<h3 align="center">aent-docker-compose</h3>
+<h1 align="center">aent-docker-compose</h1>
 <p align="center">TODO</p>
 <p align="center">
     <a href="https://travis-ci.org/theaentmachine/aent-docker-compose">
@@ -41,6 +41,7 @@ Payload format (JSON) :
   }
 }
 ```
+It handles named volumes by adding them in the root **volumes:** level
 
 ### delete-docker-service
 `$ aent delete-docker-service PAYLOAD`
