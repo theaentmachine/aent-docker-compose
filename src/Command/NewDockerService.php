@@ -23,9 +23,8 @@ class NewDockerService extends Command
     {
         $payload = $input->getArgument('payload');
 
-
         if (empty($payload)) {
-            $output->writeln("empty payload");
+            $output->writeln("in event ". $this->getName() .": empty payload", OutputInterface::VERBOSITY_VERBOSE);
             exit(1);
         }
 
@@ -36,6 +35,6 @@ class NewDockerService extends Command
         $commandYamlTools = "yaml-tools merge"
             . " -i " . Constants::AENTHILL_DOCKER_COMPOSE_PATH . " /tmp/tmp.yml "
             . " -o " . Constants::AENTHILL_DOCKER_COMPOSE_PATH;
-        $output->writeln(shell_exec($commandYamlTools));
+        $output->writeln(shell_exec($commandYamlTools), OutputInterface::VERBOSITY_VERBOSE);
     }
 }

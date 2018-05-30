@@ -23,7 +23,8 @@ class DefaultCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $event = $input->getArgument('event');
-        if (!$event) {
+        if (empty($event)) {
+            $output->writeln("in aent-docker-compose, no event");
             exit(1);
         }
         try {
@@ -36,7 +37,7 @@ class DefaultCommand extends Command
                 $command->run($arrayInput, $output);
             }
         } catch (\Exception $e) {
-            $output->writeln("Unrecognized event in aent-docker-compose : '" . $event . "'");
+            $output->writeln("in aent-docker-compose, unrecognized event : " . $event);
             exit(1);
         }
     }

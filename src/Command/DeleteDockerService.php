@@ -23,13 +23,14 @@ class DeleteDockerService extends Command
         $payload = json_decode($input->getArgument('payload'), true);
 
         if (empty($payload)) {
-            $output->writeln("empty payload");
+            $output->writeln("in event ". $this->getName() .": empty payload, exiting.", OutputInterface::VERBOSITY_VERBOSE);
             exit(1);
         }
 
-        $this->deleteService($payload[Constants::SERVICE_NAME_KEY], $output);
+        $this->deleteServiceInDockerCompose($payload[Constants::SERVICE_NAME_KEY], $output);
+
         foreach ($payload[Constants::NAMED_VOLUMES_KEY] as $v) {
-            $this->deleteNamedVolume($v, $output);
+            $this->deleteNamedVolumeInDockerCompose($v, $output);
         }
     }
 
@@ -38,11 +39,11 @@ class DeleteDockerService extends Command
      * @param OutputInterface $output
      * @return null
      */
-    protected function deleteService(string $service, OutputInterface $output)
+    protected function deleteServiceInDockerCompose(string $service, OutputInterface $output)
     {
         $commandYamlTools = "yaml-tools delete services." . $service
             . " -i " . Constants::AENTHILL_DOCKER_COMPOSE_PATH . " -o " . Constants::AENTHILL_DOCKER_COMPOSE_PATH;
-        $output->writeln(shell_exec($commandYamlTools));
+        $output->writeln(shell_exec($commandYamlTools), OutputInterface::VERBOSITY_VERBOSE);
     }
 
     /**
@@ -50,10 +51,10 @@ class DeleteDockerService extends Command
      * @param OutputInterface $output
      * @return null
      */
-    protected function deleteNamedVolume(string $v, OutputInterface $output)
+    protected function deleteNamedVolumeInDockerCompose(string $v, OutputInterface $output)
     {
         $commandYamlTools = "yaml-tools delete volumes." . $v
             . " -i " . Constants::AENTHILL_DOCKER_COMPOSE_PATH . " -o " . Constants::AENTHILL_DOCKER_COMPOSE_PATH;
-        $output->writeln(shell_exec($commandYamlTools));
+        $output->writeln(shell_exec($commandYamlTools), OutputInterface::VERBOSITY_VERBOSE);
     }
 }
