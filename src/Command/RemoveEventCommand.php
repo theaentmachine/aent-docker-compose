@@ -7,7 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class RemoveCommand extends Command
+class RemoveEventCommand extends EventCommand
 {
     protected function configure()
     {
