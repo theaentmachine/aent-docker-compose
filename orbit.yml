@@ -16,3 +16,7 @@ tasks:
       - docker run --rm -v "$(pwd):/usr/src/app" thecodingmachine/php:7.2-v1-cli composer run phpstan
       - docker run --rm -v "$(pwd):/usr/src/app" thecodingmachine/php:7.2-v1-cli composer run phpunit
       - docker build . -t theaentmachine/aent-docker-compose:{{ .Orbit.Version }}
+
+  - use: sh
+    run:
+      - docker run --rm -ti -v "/home/jindun/aenthill:/aenthill" theaentmachine/aent-docker-compose:{{ .Orbit.Version }} /bin/sh
