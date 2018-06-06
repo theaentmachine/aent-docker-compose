@@ -16,8 +16,13 @@
 
 ## events
 
-### new-docker-service
-`$ aent new-docker-service PAYLOAD`
+### ADD
+`$ aent ADD`
+
+Sent by aenthill, 
+
+### ADD-DOCKER-SERVICE
+`$ aent ADD-DOCKER-SERVICE {payload}`
 
 Payload format (JSON) :
 ```
@@ -41,10 +46,13 @@ Payload format (JSON) :
   }
 }
 ```
-It handles named volumes by adding them in the root **volumes:** level
+It handles named volumes by adding them inside the root **volumes** level in docker-compose.json
 
-### delete-docker-service
-`$ aent delete-docker-service PAYLOAD`
+TODO: handle case when the service already exists
+
+
+### DELETE-DOCKER-SERVICE
+`$ aent DELETE-DOCKER-SERVICE {payload}`
 
 Payload format (JSON) :
 ```

@@ -6,13 +6,15 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Yaml\Yaml;
 
 class DeleteDockerServiceCommand extends Command
 {
     protected function configure()
     {
         $this
-            ->setName('delete-docker-service')
+            ->setName(Cst::DELETE_DOCKER_SERVICE_EVENT)
             ->setDescription('Delete a docker service from the docker-compose.yml')
             ->setHelp('TODO')
             ->addArgument('payload', InputArgument::OPTIONAL, 'The payload of the event');
@@ -22,39 +24,49 @@ class DeleteDockerServiceCommand extends Command
     {
         $payload = json_decode($input->getArgument('payload'), true);
 
+        // $dockerComposePath = getenv('PHEROMONE_CONTAINER_PROJECT_DIR') . '/docker-compose.yml';
+        $dockerComposePath = getenv('PHEROMONE_CONTAINER_PROJECT_DIR') . '/aenthill/docker-compose.yml';
+
         if (empty($payload)) {
-            $output->writeln("in event ". $this->getName() .": empty payload, exiting.", OutputInterface::VERBOSITY_VERBOSE);
-            exit(1);
-        }
+            $yml = Yaml::parseFile($dockerComposePath);
+            //$service = array_search('service', array_column($yml, 'service'));
+            $services = array_keys($yml['services']);
+            // $volumes = $yml['volumes'];
+            $helper = $this->getHelper('question');
+            $question = new ChoiceQuestion(
+                'Please choose the services you want to detele, if any :',
+                $services
+            );
+            $question->setMultiselect(true);
+            $servicesToDelete = $helper->ask($input, $output, $question);
+            print_r($servicesToDelete);
+            foreach ($servicesToDelete as $s) {
+                $this->deleteElementInDockerCompose('services.' . $s, $dockerComposePath, $output);
+            }
+        } else {
+            $elemToDelete = "services." . $payload[Cst::SERVICE_NAME_KEY];
+            $this->deleteElementInDockerCompose($elemToDelete, $dockerComposePath, $output);
 
-        $this->deleteServiceInDockerCompose($payload[Constants::SERVICE_NAME_KEY], $output);
-
-        foreach ($payload[Constants::NAMED_VOLUMES_KEY] as $v) {
-            $this->deleteNamedVolumeInDockerCompose($v, $output);
+            foreach ($payload[Cst::NAMED_VOLUMES_KEY] as $v) {
+                $elemToDelete = "volumes." . $v;
+                $this->deleteElementInDockerCompose($elemToDelete, $dockerComposePath, $output);
+            }
         }
     }
 
     /**
-     * @param string $service
+     * @param string $element
+     * @param string $file
      * @param OutputInterface $output
-     * @return null
+     * @return void
      */
-    protected function deleteServiceInDockerCompose(string $service, OutputInterface $output)
+    protected function deleteElementInDockerCompose(string $element, string $file, OutputInterface $output)
     {
-        $commandYamlTools = "yaml-tools delete services." . $service
-            . " -i " . Constants::AENTHILL_DOCKER_COMPOSE_PATH . " -o " . Constants::AENTHILL_DOCKER_COMPOSE_PATH;
-        $output->writeln(shell_exec($commandYamlTools), OutputInterface::VERBOSITY_VERBOSE);
-    }
+        $cmd = array("yaml-tools", "delete", $element, "-i", $file, "-o", $file);
 
-    /**
-     * @param string $v
-     * @param OutputInterface $output
-     * @return null
-     */
-    protected function deleteNamedVolumeInDockerCompose(string $v, OutputInterface $output)
-    {
-        $commandYamlTools = "yaml-tools delete volumes." . $v
-            . " -i " . Constants::AENTHILL_DOCKER_COMPOSE_PATH . " -o " . Constants::AENTHILL_DOCKER_COMPOSE_PATH;
-        $output->writeln(shell_exec($commandYamlTools), OutputInterface::VERBOSITY_VERBOSE);
+        $process = Utils::runAndGetProcess($cmd, $output);
+        if (!$process->isSuccessful()) {
+            exit($process->getExitCode());
+        }
     }
 }

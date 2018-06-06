@@ -3,50 +3,20 @@
 namespace TheAentMachine\AentDockerCompose\Command;
 
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Process;
 
 class Utils
 {
-    /**
-     * @param OutputInterface $output
-     * @param string $message
-     * @return string
-     */
-    public static function getAnswer(OutputInterface $output, string $message): string
-    {
-        $output->write($message);
-        $str = trim(fgets(STDIN));
-        return $str;
-    }
-
-
-    /**
-     * @param OutputInterface $output
-     * @param string $message
-     * @return string[]
-     */
-    public static function getAnswerArray(OutputInterface $output, string $message): array
-    {
-        $array = array();
-        $output->write($message);
-        $str = trim(fgets(STDIN));
-        while ($str != "") {
-            array_push($array, $str);
-            $output->write("another one? : ");
-            $str = trim(fgets(STDIN));
-        }
-        return $array;
-    }
-
     /**
      * Delete all key/value pairs with empty value by recursively using array_filter
      * @param array $input
      * @return mixed[] array
      */
-    public static function arrayFilterRecursive(array $input): array
+    public static function arrayFilterRec(array $input): array
     {
         foreach ($input as &$value) {
             if (is_array($value)) {
-                $value = Utils::arrayFilterRecursive($value);
+                $value = Utils::arrayFilterRec($value);
             }
         }
         return array_filter($input);
@@ -56,18 +26,18 @@ class Utils
      * @param string $payload
      * @return mixed[] array
      */
-    public static function formatPayloadToDockerCompose(string $payload): array
+    public static function parsePayload(string $payload, OutputInterface $output): array
     {
         $p = json_decode($payload, true);
         if (!$p) {
-            echo ("error: invalid payload");
-            return array();
+            $output->writeln("   ⨯ payload error: invalid payload");
+            exit(1);
         }
 
-        $serviceName = $p[Constants::SERVICE_NAME_KEY] ?? "";
+        $serviceName = $p[Cst::SERVICE_NAME_KEY] ?? "";
         if (empty($serviceName)) {
-            echo ("error: empty ". Constants::SERVICE_NAME_KEY);
-            return array();
+            $output->writeln("   ⨯ payload error: empty " . Cst::SERVICE_NAME_KEY);
+            exit(1);
         }
 
         $service = $p['service'] ?? array();
@@ -113,7 +83,7 @@ class Utils
             }
 
             $formattedPayload = array(
-                "services" => Utils::arrayFilterRecursive(array(
+                "services" => Utils::arrayFilterRec(array(
                     $serviceName => array(
                         "image" => $image,
                         "depends_on" => $dependsOn,
@@ -130,9 +100,32 @@ class Utils
 
             return $formattedPayload;
         } else {
-            echo ("error: empty service");
+            $output->writeln("  ⨯ payload error: empty " . Cst::SERVICE_KEY);
+            exit(1);
         }
 
-        return array();
+        exit(1);
+    }
+
+    /**
+     * Run a process and return the exit code
+     * @param mixed $cmd command line in a single string or an array of strings
+     * @param OutputInterface $output
+     * @return Process
+     */
+    public static function runAndGetProcess($cmd, OutputInterface $output): Process
+    {
+        if (!is_array($cmd)) {
+            $cmd = explode(' ', $cmd);
+        }
+
+        $process = new Process($cmd);
+
+        $process->start();
+        foreach ($process as $type => $buffer) {
+            $output->write($buffer);
+        }
+
+        return $process;
     }
 }

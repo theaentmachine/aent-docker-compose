@@ -19,4 +19,4 @@ tasks:
 
   - use: sh
     run:
-      - docker run --rm -ti -v "$(pwd)/aenthill:/aenthill" theaentmachine/aent-docker-compose:{{ .Orbit.Version }} /bin/sh
+      - docker run --rm -ti -v "/home/jindun/aenthill:/aenthill" theaentmachine/aent-docker-compose:{{ .Orbit.Version }} /bin/sh

@@ -33,9 +33,15 @@ RUN wget -q https://raw.githubusercontent.com/thecodingmachine/yaml-tools/$YAML_
     chmod +x /usr/bin/yaml-tools
 
 # Installs Hermes.
-ENV HERMES_VERSION "0.0.2"
+ENV HERMES_VERSION "0.0.6"
 RUN wget -qO- https://github.com/aenthill/hermes/releases/download/$HERMES_VERSION/hermes_linux_amd64.tar.gz | tar xvz -C . &&\
     mv ./hermes /usr/bin &&\
+    rm -f LICENSE README.md
+
+# Installs Hercule.
+ENV HERCULE_VERSION "0.0.3"
+RUN wget -qO- https://github.com/aenthill/hercule/releases/download/$HERCULE_VERSION/hercule_linux_amd64.tar.gz | tar xvz -C . &&\
+    mv ./hercule /usr/bin &&\
     rm -f LICENSE README.md
 
 # Copies our aent entry point.

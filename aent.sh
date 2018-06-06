@@ -1,5 +1,5 @@
 #!/bin/sh
 
-set -xe
+set -e
 
 php /src/aent.php run "$@"
