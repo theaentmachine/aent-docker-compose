@@ -26,6 +26,7 @@ class RootCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int
+     * @throws \TheAentMachine\AentDockerCompose\YamlTools\Exception\YamlToolsException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -58,24 +59,35 @@ class RootCommand extends Command
 
         $command->setLog($log);
         $command->setPayload($payload);
+        $command->setDockerCompose($dockerCompose);
 
         return $command->execute($input, $output);
     }
 
     /**
      * @param string $event
-     * @return null|AddEventCommand|RemoveEventCommand
+     * @return null|AddEventCommand|RemoveEventCommand|NewDockerServiceInfoEventCommand|DeleteDockerServiceEventCommand
      */
     private function handleEvent(string $event): ?EventCommand
     {
         switch ($event) {
             case EventEnum::ADD:
-                return new AddEventCommand();
+                $eventCommand = new AddEventCommand();
+                break;
             case EventEnum::REMOVE:
-                return new RemoveEventCommand();
+                $eventCommand = new RemoveEventCommand();
+                break;
+            case EventEnum::NEW_DOCKER_SERVICE_INFO:
+                $eventCommand = new NewDockerServiceInfoEventCommand();
+                break;
+            case EventEnum::DELETE_DOCKER_SERVICE:
+                $eventCommand = new DeleteDockerServiceEventCommand();
+                break;
             default:
                 return null;
         }
+        $eventCommand->setHelperSet($this->getHelperSet());
+        return $eventCommand;
     }
 
     /**

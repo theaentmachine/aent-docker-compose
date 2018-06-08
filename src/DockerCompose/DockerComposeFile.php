@@ -22,4 +22,12 @@ class DockerComposeFile
     {
         return $this->file->getFilename();
     }
+
+    /**
+     * @return string
+     */
+    public function getPathname(): string
+    {
+        return $this->file->getPathname();
+    }
 }

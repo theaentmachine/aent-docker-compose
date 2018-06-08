@@ -1,11 +1,12 @@
 <?php
+
 namespace TheAentMachine\AentDockerCompose\DockerCompose;
 
 use Nette\NotImplementedException;
 use Symfony\Component\Finder\Finder;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\PheromoneEnum;
-use TheAentMachine\AentDockerCompose\Aenthill\Log;
 use TheAentMachine\AentDockerCompose\Aenthill\Exception\ContainerProjectDirEnvVariableEmptyException;
+use TheAentMachine\AentDockerCompose\Aenthill\Log;
 
 class DockerCompose
 {
@@ -50,14 +51,28 @@ class DockerCompose
         /** @var \SplFileInfo $file */
         foreach ($finder as $file) {
             $this->files[] = new DockerComposeFile($file);
+            $this->log->infoln($file->getFilename() . ' has been found');
         }
 
-        if (count($this->files) === 1) {
+        /*if (count($this->files) === 1) {
             $this->log->infoln($this->files[0]->getFilename() . ' has been found');
             return;
         }
 
         throw new NotImplementedException("multiple docker-compose files handling is not yet implemented");
+        */
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDockerComposePathnames(): array
+    {
+        $pathnames = array();
+        foreach ($this->files as $file) {
+            $pathnames[] = $file->getPathname();
+        }
+        return $pathnames;
     }
 
     /**

@@ -8,20 +8,19 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Yaml\Yaml;
+use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
 
-class DeleteDockerServiceCommand extends Command
+class DeleteDockerServiceEventCommand extends EventCommand
 {
     protected function configure()
     {
-        $this
-            ->setName(Cst::DELETE_DOCKER_SERVICE_EVENT)
-            ->setDescription('Delete a docker service from the docker-compose.yml')
-            ->setHelp('TODO')
-            ->addArgument('payload', InputArgument::OPTIONAL, 'The payload of the event');
+        $this->setName(EventEnum::DELETE_DOCKER_SERVICE);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        // TODO : ask for services to delete
+        /*
         $payload = json_decode($input->getArgument('payload'), true);
 
         // $dockerComposePath = getenv('PHEROMONE_CONTAINER_PROJECT_DIR') . '/docker-compose.yml';
@@ -35,11 +34,14 @@ class DeleteDockerServiceCommand extends Command
             $helper = $this->getHelper('question');
             $question = new ChoiceQuestion(
                 'Please choose the services you want to detele, if any :',
-                $services
+                $services,
+                null
             );
             $question->setMultiselect(true);
             $servicesToDelete = $helper->ask($input, $output, $question);
-            print_r($servicesToDelete);
+
+            // print_r($servicesToDelete);
+
             foreach ($servicesToDelete as $s) {
                 $this->deleteElementInDockerCompose('services.' . $s, $dockerComposePath, $output);
             }
@@ -51,7 +53,7 @@ class DeleteDockerServiceCommand extends Command
                 $elemToDelete = "volumes." . $v;
                 $this->deleteElementInDockerCompose($elemToDelete, $dockerComposePath, $output);
             }
-        }
+        }*/
     }
 
     /**

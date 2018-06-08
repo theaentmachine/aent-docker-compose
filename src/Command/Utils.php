@@ -23,10 +23,10 @@ class Utils
     }
 
     /**
-     * @param string $payload
+     * @param string|null $payload
      * @return mixed[] array
      */
-    public static function parsePayload(string $payload, OutputInterface $output): array
+    public static function parsePayload(?string $payload, OutputInterface $output): array
     {
         $p = json_decode($payload, true);
         if (!$p) {
