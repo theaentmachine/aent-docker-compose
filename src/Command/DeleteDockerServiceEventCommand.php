@@ -3,7 +3,7 @@
 namespace TheAentMachine\AentDockerCompose\Command;
 
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
-use TheAentMachine\AentDockerCompose\Aenthill\JsonEventCommand;
+use TheAentMachine\JsonEventCommand;
 
 class DeleteDockerServiceEventCommand extends JsonEventCommand
 {
