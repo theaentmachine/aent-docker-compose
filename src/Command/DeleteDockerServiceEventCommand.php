@@ -2,12 +2,8 @@
 
 namespace TheAentMachine\AentDockerCompose\Command;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\Yaml\Yaml;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
 
 class DeleteDockerServiceEventCommand extends EventCommand
@@ -54,21 +50,5 @@ class DeleteDockerServiceEventCommand extends EventCommand
                 $this->deleteElementInDockerCompose($elemToDelete, $dockerComposePath, $output);
             }
         }*/
-    }
-
-    /**
-     * @param string $element
-     * @param string $file
-     * @param OutputInterface $output
-     * @return void
-     */
-    protected function deleteElementInDockerCompose(string $element, string $file, OutputInterface $output)
-    {
-        $cmd = array("yaml-tools", "delete", $element, "-i", $file, "-o", $file);
-
-        $process = Utils::runAndGetProcess($cmd, $output);
-        if (!$process->isSuccessful()) {
-            exit($process->getExitCode());
-        }
     }
 }

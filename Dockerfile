@@ -28,7 +28,7 @@ RUN wget -qO- https://download.docker.com/linux/static/stable/x86_64/docker-$DOC
     rm -rf ./docker
 
 # Installs yaml-tools
-ENV YAML_TOOLS_VERSION "0.1.0"
+ENV YAML_TOOLS_VERSION "0.2.0"
 RUN wget -q https://raw.githubusercontent.com/thecodingmachine/yaml-tools/$YAML_TOOLS_VERSION/src/yaml_tools.py -O /usr/bin/yaml-tools &&\
     chmod +x /usr/bin/yaml-tools
 

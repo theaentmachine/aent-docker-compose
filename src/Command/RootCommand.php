@@ -26,7 +26,6 @@ class RootCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int
-     * @throws \TheAentMachine\AentDockerCompose\YamlTools\Exception\YamlToolsException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -61,7 +60,12 @@ class RootCommand extends Command
         $command->setPayload($payload);
         $command->setDockerCompose($dockerCompose);
 
-        return $command->execute($input, $output);
+        try {
+            return $command->execute($input, $output);
+        } catch (\Exception $e) {
+            $log->errorln($e->getMessage());
+            return 1;
+        }
     }
 
     /**
@@ -96,12 +100,12 @@ class RootCommand extends Command
     private function printWelcomeMessage(OutputInterface $output): void
     {
         $output->writeln("
-                             _   _____             _              _____
-             /\             | | |  __ \           | |            / ____|
-            /  \   ___ _ __ | |_| |  | | ___   ___| | _____ _ __| |     ___  _ __ ___  _ __   ___  ___  ___
-           / /\ \ / _ \ '_ \| __| |  | |/ _ \ / __| |/ / _ \ '__| |    / _ \| '_ ` _ \| '_ \ / _ \/ __|/ _ \
-          / ____ \  __/ | | | |_| |__| | (_) | (__|   <  __/ |  | |___| (_) | | | | | | |_) | (_) \__ \  __/
-         /_/    \_\___|_| |_|\__|_____/ \___/ \___|_|\_\___|_|   \_____\___/|_| |_| |_| .__/ \___/|___/\___|
+                    _   _____             _              _____
+    /\             | | |  __ \           | |            / ____|
+   /  \   ___ _ __ | |_| |  | | ___   ___| | _____ _ __| |     ___  _ __ ___  _ __   ___  ___  ___
+  / /\ \ / _ \ '_ \| __| |  | |/ _ \ / __| |/ / _ \ '__| |    / _ \| '_ ` _ \| '_ \ / _ \/ __|/ _ \
+ / ____ \  __/ | | | |_| |__| | (_) | (__|   <  __/ |  | |___| (_) | | | | | | |_) | (_) \__ \  __/
+/_/    \_\___|_| |_|\__|_____/ \___/ \___|_|\_\___|_|   \_____\___/|_| |_| |_| .__/ \___/|___/\___|
                                                                                       | |
                                                                                       |_|
         ");

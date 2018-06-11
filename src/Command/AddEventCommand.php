@@ -22,7 +22,7 @@ class AddEventCommand extends EventCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $exitCode = Hercule::setHandledEvents([EventEnum::NEW_DOCKER_SERVICE_INFO]);
+        $exitCode = Hercule::setHandledEvents(EventEnum::getHandledEvents());
         if ($exitCode !== 0) {
             return $exitCode;
         }

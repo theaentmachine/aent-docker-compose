@@ -1,6 +1,6 @@
 <?php
 
-namespace TheAentMachine\AentDockerCompose\DockerService\Exception;
+namespace TheAentMachine\AentDockerCompose\Service\Exception;
 
 class PayloadInvalidJsonException extends ServiceException
 {
@@ -9,6 +9,6 @@ class PayloadInvalidJsonException extends ServiceException
      */
     public function __construct()
     {
-        parent::__construct('payload is not in valid JSON format');
+        parent::__construct('payload is not in a valid JSON format');
     }
 }
