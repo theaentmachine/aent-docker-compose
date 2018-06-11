@@ -3,9 +3,9 @@
 namespace TheAentMachine\AentDockerCompose\Command;
 
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
-use TheAentMachine\AentDockerCompose\Aenthill\Hercule;
-use TheAentMachine\AentDockerCompose\Aenthill\Hermes;
 use TheAentMachine\EventCommand;
+use TheAentMachine\Hercule;
+use TheAentMachine\Hermes;
 
 class AddEventCommand extends EventCommand
 {
