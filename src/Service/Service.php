@@ -125,30 +125,27 @@ class Service
     }
 
     /**
-     * @param string $payload
+     * @param mixed[] $payload
      * @throws EmptyAttributeException
      * @throws KeysMissingInArrayException
      * @throws PayloadInvalidJsonException
      * @throws VolumeTypeException
      */
-    public function parsePayload(string $payload): void
+    public static function parsePayload(array $payload): self
     {
-        $p = json_decode($payload, true);
-        if (!$p) {
-            throw new PayloadInvalidJsonException();
-        }
-        $this->serviceName = $p["serviceName"] ?? '';
-        $service = $p['service'] ?? array();
+        $service = new Service();
+        $service->serviceName = $payload['serviceName'] ?? '';
+        $service = $payload['service'] ?? array();
         if (!empty($service)) {
-            $this->image = $service['image'] ?? '';
-            $this->internalPorts = $service['internalPorts'] ?? '';
-            $this->dependsOn = $service['dependsOn'] ?? array();
-            $this->ports = $service['ports'] ?? array();
-            $this->labels = $service['labels'] ?? array();
-            $this->environments = $service['environments'] ?? array();
-            $this->volumes = $service['volumes'] ?? array();
+            $service->image = $service['image'] ?? '';
+            $service->internalPorts = $service['internalPorts'] ?? '';
+            $service->dependsOn = $service['dependsOn'] ?? array();
+            $service->ports = $service['ports'] ?? array();
+            $service->labels = $service['labels'] ?? array();
+            $service->environments = $service['environments'] ?? array();
+            $service->volumes = $service['volumes'] ?? array();
         }
-        $this->checkValidity(true);
+        $service->checkValidity(true);
     }
 
     /**

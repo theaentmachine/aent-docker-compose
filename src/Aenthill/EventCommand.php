@@ -3,7 +3,6 @@
 
 namespace TheAentMachine\AentDockerCompose\Aenthill;
 
-
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -27,7 +26,7 @@ abstract class EventCommand extends Command
     protected $output;
 
     abstract protected function getEventName(): string;
-    abstract protected function executeEvent(string $payload): int;
+    abstract protected function executeEvent(?string $payload): void;
 
     protected function configure()
     {
@@ -37,7 +36,7 @@ abstract class EventCommand extends Command
             ->addArgument('payload', InputArgument::OPTIONAL, 'The event payload');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $logLevelConfigurator = new LogLevelConfigurator($output);
         $logLevelConfigurator->configureLogLevel();
@@ -48,6 +47,6 @@ abstract class EventCommand extends Command
         $this->input = $input;
         $this->output = $output;
 
-        return $this->executeEvent($payload);
+        $this->executeEvent($payload);
     }
 }

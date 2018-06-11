@@ -28,7 +28,6 @@ class LogLevelConfigurator
     }
 
     /**
-     * @param string $logLevel
      * @throws LogLevelException
      * @return void
      */

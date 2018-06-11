@@ -9,9 +9,9 @@ class Hercule
 
     /**
      * @param string[] $events
-     * @return int
+     * @throws \Symfony\Component\Process\Exception\ProcessFailedException
      */
-    public static function setHandledEvents(array $events): int
+    public static function setHandledEvents(array $events): void
     {
         $command = Hercule::BINARY . ' set:handled-events';
         foreach ($events as $event) {
@@ -22,6 +22,6 @@ class Hercule
         $process->enableOutput();
         $process->setTty(true);
 
-        return $process->run();
+        $process->mustRun();
     }
 }

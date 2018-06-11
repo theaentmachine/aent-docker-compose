@@ -3,7 +3,6 @@
 
 namespace TheAentMachine\AentDockerCompose\Aenthill;
 
-
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
 

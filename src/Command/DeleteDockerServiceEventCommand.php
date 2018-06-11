@@ -5,16 +5,18 @@ namespace TheAentMachine\AentDockerCompose\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
+use TheAentMachine\AentDockerCompose\Aenthill\JsonEventCommand;
 
-class DeleteDockerServiceEventCommand extends EventCommand
+class DeleteDockerServiceEventCommand extends JsonEventCommand
 {
-    protected function configure()
+    protected function getEventName(): string
     {
-        $this->setName(EventEnum::DELETE_DOCKER_SERVICE);
+        return EventEnum::DELETE_DOCKER_SERVICE;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function executeJsonEvent(array $payload): void
     {
+        throw new \RuntimeException('Not implemented yet');
         // TODO : ask for services to delete
         /*
         $payload = json_decode($input->getArgument('payload'), true);

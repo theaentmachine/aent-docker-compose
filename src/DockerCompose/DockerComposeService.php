@@ -3,33 +3,29 @@
 namespace TheAentMachine\AentDockerCompose\DockerCompose;
 
 use Nette\NotImplementedException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Finder\Finder;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\PheromoneEnum;
 use TheAentMachine\AentDockerCompose\Aenthill\Exception\ContainerProjectDirEnvVariableEmptyException;
 use TheAentMachine\AentDockerCompose\Aenthill\LogLevelConfigurator;
 
-class DockerCompose
+class DockerComposeService
 {
-    /** @var LogLevelConfigurator */
+    /** @var LoggerInterface */
     private $log;
 
     /** @var DockerComposeFile[] */
     private $files;
 
-    /**
-     * DockerCompose constructor.
-     * @param LogLevelConfigurator $log
-     */
-    public function __construct(LogLevelConfigurator $log)
+    public function __construct(LoggerInterface $log)
     {
         $this->log = $log;
-        $this->files = [];
     }
 
     /**
      * @throws ContainerProjectDirEnvVariableEmptyException
      */
-    public function seekFiles(): void
+    private function seekFiles(): void
     {
         $containerProjectDir = getenv(PheromoneEnum::PHEROMONE_CONTAINER_PROJECT_DIR);
         if (empty($containerProjectDir)) {
@@ -43,7 +39,7 @@ class DockerCompose
         $finder->files()->filter($dockerComposeFileFilter)->in($containerProjectDir)->depth('== 0');
 
         if (!$finder->hasResults()) {
-            $this->log->infoln("no docker-compose file found, let's create it");
+            $this->log->info("no docker-compose file found, let's create it");
             $this->createDockerComposeFile($containerProjectDir . '/docker-compose.yml');
             return;
         }
@@ -51,11 +47,11 @@ class DockerCompose
         /** @var \SplFileInfo $file */
         foreach ($finder as $file) {
             $this->files[] = new DockerComposeFile($file);
-            $this->log->infoln($file->getFilename() . ' has been found');
+            $this->log->info($file->getFilename() . ' has been found');
         }
 
         /*if (count($this->files) === 1) {
-            $this->log->infoln($this->files[0]->getFilename() . ' has been found');
+            $this->log->info($this->files[0]->getFilename() . ' has been found');
             return;
         }
 
@@ -68,6 +64,9 @@ class DockerCompose
      */
     public function getDockerComposePathnames(): array
     {
+        if ($this->files === null) {
+            $this->seekFiles();
+        }
         $pathnames = array();
         foreach ($this->files as $file) {
             $pathnames[] = $file->getPathname();
@@ -86,6 +85,6 @@ class DockerCompose
 
         $file = new DockerComposeFile(new \SplFileInfo($path));
         $this->files[] = $file;
-        $this->log->infoln($file->getFilename() . ' was successfully created!');
+        $this->log->info($file->getFilename() . ' was successfully created!');
     }
 }
