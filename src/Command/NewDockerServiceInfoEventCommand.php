@@ -10,27 +10,22 @@ use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
 use TheAentMachine\AentDockerCompose\YamlTools\Exception\YamlToolsException;
 use TheAentMachine\AentDockerCompose\YamlTools\YamlTools;
 
-class NewDockerServiceInfoEventCommand extends EventCommand
+class NewDockerServiceInfoEventCommand extends \TheAentMachine\AentDockerCompose\Aenthill\EventCommand
 {
-    protected function configure()
+
+    protected function getEventName(): string
     {
-        $this->setName(EventEnum::NEW_DOCKER_SERVICE_INFO);
+        return EventEnum::NEW_DOCKER_SERVICE_INFO
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int|null
-     * @throws YamlToolsException
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function executeEvent(string $payload): int
     {
-        $formattedPayload = Utils::parsePayload($this->payload, $output);
+        $formattedPayload = Utils::parsePayload($payload, $this->output);
         $yml = Yaml::dump($formattedPayload, 256, 4, Yaml::DUMP_OBJECT_AS_MAP);
         file_put_contents(YamlTools::TMP_YAML_FILE, $yml);
 
         $dockerComposeFilePathnames = $this->getDockerComposePathnames();
-        $toMerge = $this->askMultiSelectQuestion($input, $output, $dockerComposeFilePathnames);
+        $toMerge = $this->askMultiSelectQuestion($this->input, $this->output, $dockerComposeFilePathnames);
 
         if (!empty($toMerge)) {
             foreach ($toMerge as $file) {

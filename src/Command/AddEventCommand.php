@@ -8,19 +8,14 @@ use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
 use TheAentMachine\AentDockerCompose\Aenthill\Hercule;
 use TheAentMachine\AentDockerCompose\Aenthill\Hermes;
 
-class AddEventCommand extends EventCommand
+class AddEventCommand extends \TheAentMachine\AentDockerCompose\Aenthill\EventCommand
 {
-    protected function configure()
+    protected function getEventName(): string
     {
-        $this->setName(EventEnum::ADD);
+        return EventEnum::ADD;
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function executeEvent(string $payload): int
     {
         $exitCode = Hercule::setHandledEvents([EventEnum::NEW_DOCKER_SERVICE_INFO]);
         if ($exitCode !== 0) {

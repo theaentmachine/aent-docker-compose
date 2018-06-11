@@ -3,13 +3,13 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use Symfony\Component\Console\Application;
+use TheAentMachine\AentDockerCompose\Aenthill\AentApplication;
 use TheAentMachine\AentDockerCompose\Command\RootCommand;
 
-$application = new Application();
+$application = new AentApplication();
 $rootCommand = new RootCommand();
 $application->add($rootCommand);
-$application->setDefaultCommand($rootCommand->getName());
+//$application->setDefaultCommand($rootCommand->getName());
 
 try {
     exit($application->run());

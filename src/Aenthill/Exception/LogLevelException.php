@@ -1,18 +1,17 @@
 <?php
 namespace TheAentMachine\AentDockerCompose\Aenthill\Exception;
 
+use TheAentMachine\AentDockerCompose\Aenthill\Enum\PheromoneEnum;
+
 class LogLevelException extends AenthillException
 {
-    /** @var string */
-    private $wrongLogLevel;
-
-    /**
-     * LogLevelException constructor.
-     * @param string $wrongLogLevel
-     */
-    public function __construct(string $wrongLogLevel)
+    public static function invalidLogLevel(string $wrongLogLevel): self
     {
-        $this->wrongLogLevel = $wrongLogLevel;
-        parent::__construct("accepted values for log level: DEBUG, INFO, WARN, ERROR. Got $wrongLogLevel");
+        return new self("Accepted values for log level: DEBUG, INFO, WARN, ERROR. Got '$wrongLogLevel'");
+    }
+
+    public static function emptyLogLevel(): self
+    {
+        return new self('Could not find environment variable ' . PheromoneEnum::PHEROMONE_LOG_LEVEL);
     }
 }

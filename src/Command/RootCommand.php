@@ -4,10 +4,11 @@ namespace TheAentMachine\AentDockerCompose\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\PheromoneEnum;
-use TheAentMachine\AentDockerCompose\Aenthill\Log;
+use TheAentMachine\AentDockerCompose\Aenthill\LogLevelConfigurator;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerCompose;
 
 class RootCommand extends Command
@@ -31,33 +32,31 @@ class RootCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->printWelcomeMessage($output);
-        $log = new Log($output);
+        $logLevelConfigurator = new LogLevelConfigurator($output);
+        $logLevelConfigurator->configureLogLevel();
 
-        try {
-            $log->setLevel(getenv(PheromoneEnum::PHEROMONE_LOG_LEVEL));
-        } catch (\Exception $e) {
-            $log->errorln($e->getMessage());
-            return 1;
-        }
+        $log = new ConsoleLogger($output);
 
         $event = $input->getArgument('event');
         $payload = $input->getArgument('payload');
-        $command = $this->handleEvent($event);
+
+        $command = $this->commandFactory->createCommand($event, $payload, $log);
+        //$command = $this->handleEvent($event);
 
         if (empty($command)) {
-            $log->infoln("event $event is not handled by this aent, bye!");
+            $log->info("event $event is not handled by this aent, bye!");
             return 0;
         }
 
-        $dockerCompose = new DockerCompose($log);
+        $dockerCompose = new DockerCompose($logLevelConfigurator);
         try {
             $dockerCompose->seekFiles();
         } catch (\Exception $e) {
-            $log->errorln($e->getMessage());
+            $log->error($e->getMessage());
             return 1;
         }
 
-        $command->setLog($log);
+        $command->setLog($logLevelConfigurator);
         $command->setPayload($payload);
         $command->setDockerCompose($dockerCompose);
 

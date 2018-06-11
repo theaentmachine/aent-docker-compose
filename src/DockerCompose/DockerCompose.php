@@ -6,11 +6,11 @@ use Nette\NotImplementedException;
 use Symfony\Component\Finder\Finder;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\PheromoneEnum;
 use TheAentMachine\AentDockerCompose\Aenthill\Exception\ContainerProjectDirEnvVariableEmptyException;
-use TheAentMachine\AentDockerCompose\Aenthill\Log;
+use TheAentMachine\AentDockerCompose\Aenthill\LogLevelConfigurator;
 
 class DockerCompose
 {
-    /** @var Log */
+    /** @var LogLevelConfigurator */
     private $log;
 
     /** @var DockerComposeFile[] */
@@ -18,9 +18,9 @@ class DockerCompose
 
     /**
      * DockerCompose constructor.
-     * @param Log $log
+     * @param LogLevelConfigurator $log
      */
-    public function __construct(Log $log)
+    public function __construct(LogLevelConfigurator $log)
     {
         $this->log = $log;
         $this->files = [];
