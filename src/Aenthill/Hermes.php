@@ -7,12 +7,7 @@ class Hermes
 {
     const BINARY = 'hermes';
 
-    /**
-     * @param string $event
-     * @param null|string $payload
-     * @return int
-     */
-    public static function dispatch(string $event, ?string $payload = null): int
+    public static function dispatch(string $event, ?string $payload = null): void
     {
         $command = Hermes::BINARY . " dispatch $event";
         if (!empty($payload)) {
@@ -23,15 +18,10 @@ class Hermes
         $process->enableOutput();
         $process->setTty(true);
 
-        return $process->run();
+        $process->mustRun();
     }
 
-    /**
-     * @param string $event
-     * @param null|string $payload
-     * @return int
-     */
-    public static function reply(string $event, ?string $payload = null): int
+    public static function reply(string $event, ?string $payload = null): void
     {
         $command = Hermes::BINARY . " reply $event";
         if (!empty($payload)) {
@@ -42,6 +32,6 @@ class Hermes
         $process->enableOutput();
         $process->setTty(true);
 
-        return $process->run();
+        $process->mustRun();
     }
 }

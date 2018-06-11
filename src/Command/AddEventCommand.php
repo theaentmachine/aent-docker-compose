@@ -2,31 +2,21 @@
 
 namespace TheAentMachine\AentDockerCompose\Command;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
 use TheAentMachine\AentDockerCompose\Aenthill\Hercule;
 use TheAentMachine\AentDockerCompose\Aenthill\Hermes;
 
-class AddEventCommand extends EventCommand
+class AddEventCommand extends \TheAentMachine\AentDockerCompose\Aenthill\EventCommand
 {
-    protected function configure()
+    protected function getEventName(): string
     {
-        $this->setName(EventEnum::ADD);
+        return EventEnum::ADD;
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function executeEvent(?string $payload): void
     {
-        $exitCode = Hercule::setHandledEvents(EventEnum::getHandledEvents());
-        if ($exitCode !== 0) {
-            return $exitCode;
-        }
+        Hercule::setHandledEvents(EventEnum::getHandledEvents());
 
-        return Hermes::dispatch(EventEnum::ASKING_FOR_DOCKER_SERVICE_INFO);
+        Hermes::dispatch(EventEnum::ASKING_FOR_DOCKER_SERVICE_INFO);
     }
 }
