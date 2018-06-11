@@ -10,27 +10,18 @@ use TheAentMachine\AentDockerCompose\Service\Service;
 use TheAentMachine\AentDockerCompose\YamlTools\Exception\YamlToolsException;
 use TheAentMachine\AentDockerCompose\YamlTools\YamlTools;
 
-class NewDockerServiceInfoEventCommand extends EventCommand
+class NewDockerServiceInfoEventCommand extends \TheAentMachine\AentDockerCompose\Aenthill\EventCommand
 {
-    protected function configure()
+
+    protected function getEventName(): string
     {
-        $this->setName(EventEnum::NEW_DOCKER_SERVICE_INFO);
+        return EventEnum::NEW_DOCKER_SERVICE_INFO
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int|null
-     * @throws YamlToolsException
-     * @throws \TheAentMachine\AentDockerCompose\Service\Exception\EmptyAttributeException
-     * @throws \TheAentMachine\AentDockerCompose\Service\Exception\KeysMissingInArrayException
-     * @throws \TheAentMachine\AentDockerCompose\Service\Exception\PayloadInvalidJsonException
-     * @throws \TheAentMachine\AentDockerCompose\Service\Exception\VolumeTypeException
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function executeEvent(string $payload): int
     {
         $service = new Service();
-        $service->parsePayload($this->payload ?? "");
+        $service->parsePayload($payload ?? "");
         $formattedPayload = $service->serializeToDockerComposeService(false);
         $yml = Yaml::dump($formattedPayload, 256, 4, Yaml::DUMP_OBJECT_AS_MAP);
         file_put_contents(YamlTools::TMP_YAML_FILE, $yml);
@@ -39,7 +30,7 @@ class NewDockerServiceInfoEventCommand extends EventCommand
         if (count($dockerComposeFilePathnames) == 1) {
             $toMerge = $dockerComposeFilePathnames;
         } else {
-            $toMerge = $this->askMultiSelectQuestion($input, $output, $dockerComposeFilePathnames);
+            $toMerge = $this->askMultiSelectQuestion($this->input, $this->output, $dockerComposeFilePathnames);
         }
 
         foreach ($toMerge as $file) {

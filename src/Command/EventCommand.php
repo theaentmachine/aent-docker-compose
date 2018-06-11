@@ -7,12 +7,12 @@ use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use TheAentMachine\AentDockerCompose\Aenthill\Log;
+use TheAentMachine\AentDockerCompose\Aenthill\LogLevelConfigurator;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerCompose;
 
 abstract class EventCommand extends Command
 {
-    /** @var Log */
+    /** @var LogLevelConfigurator */
     protected $log;
 
     /** @var null|string */
@@ -22,9 +22,9 @@ abstract class EventCommand extends Command
     protected $dockerCompose;
 
     /**
-     * @param Log $log
+     * @param LogLevelConfigurator $log
      */
-    public function setLog(Log $log): void
+    public function setLog(LogLevelConfigurator $log): void
     {
         $this->log = $log;
     }
