@@ -15,7 +15,7 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use TheAentMachine\AentDockerCompose\Aenthill\AentApplication;
+use TheAentMachine\AentApplication;
 use TheAentMachine\AentDockerCompose\Command\AddEventCommand;
 use TheAentMachine\AentDockerCompose\Command\DeleteDockerServiceEventCommand;
 use TheAentMachine\AentDockerCompose\Command\NewDockerServiceInfoEventCommand;

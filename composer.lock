@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "a352816c7fd1b8cecca68c90f13cd516",
+    "content-hash": "db85ddd1b51734763db39d141eccbef6",
     "packages": [
         {
             "name": "psr/log",
@@ -391,6 +391,70 @@
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
             "time": "2018-05-30T07:26:09+00:00"
+        },
+        {
+            "name": "theaentmachine/aent-console",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/theaentmachine/aent-console.git",
+                "reference": "9aca0bd5c9e58f3850cb9509d61f1d532e370c1e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/theaentmachine/aent-console/zipball/9aca0bd5c9e58f3850cb9509d61f1d532e370c1e",
+                "reference": "9aca0bd5c9e58f3850cb9509d61f1d532e370c1e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1",
+                "psr/log": "^1",
+                "symfony/console": "^4.0",
+                "symfony/finder": "^4.1",
+                "symfony/process": "^4.1",
+                "symfony/yaml": "^4.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.9.2",
+                "phpunit/phpunit": "^7",
+                "squizlabs/php_codesniffer": "^3.2",
+                "thecodingmachine/phpstan-strict-rules": "^0.9.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "TheAentMachine\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Julien Neuhart",
+                    "email": "j.neuhart@thecodingmachine.com",
+                    "homepage": "https://github.com/gulien"
+                },
+                {
+                    "name": "Jindun Shao",
+                    "email": "j.shao@thecodingmachine.com",
+                    "homepage": "https://github.com/JinTotonic"
+                },
+                {
+                    "name": "David Négrier",
+                    "email": "d.negrier@thecodingmachine.com",
+                    "homepage": "https://github.com/moufmouf"
+                }
+            ],
+            "description": "A utility PHP package to create Aents using Symfony console.",
+            "homepage": "https://github.com/theaentmachine/aent-console",
+            "time": "2018-06-11T15:42:46+00:00"
         }
     ],
     "packages-dev": [
@@ -1601,16 +1665,16 @@
         },
         {
             "name": "phpunit/php-file-iterator",
-            "version": "2.0.0",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-file-iterator.git",
-                "reference": "e20525b0c2945c7c317fff95660698cb3d2a53bc"
+                "reference": "cecbc684605bb0cc288828eb5d65d93d5c676d3c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/e20525b0c2945c7c317fff95660698cb3d2a53bc",
-                "reference": "e20525b0c2945c7c317fff95660698cb3d2a53bc",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/cecbc684605bb0cc288828eb5d65d93d5c676d3c",
+                "reference": "cecbc684605bb0cc288828eb5d65d93d5c676d3c",
                 "shasum": ""
             },
             "require": {
@@ -1644,7 +1708,7 @@
                 "filesystem",
                 "iterator"
             ],
-            "time": "2018-05-28T12:13:49+00:00"
+            "time": "2018-06-11T11:44:00+00:00"
         },
         {
             "name": "phpunit/php-text-template",
@@ -2717,9 +2781,9 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": [],
-    "prefer-stable": false,
+    "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": ">=7.1"

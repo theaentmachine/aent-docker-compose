@@ -2,6 +2,7 @@
 namespace TheAentMachine\AentDockerCompose\Aenthill\Exception;
 
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\PheromoneEnum;
+use TheAentMachine\Exception\AenthillException;
 
 class ContainerProjectDirEnvVariableEmptyException extends AenthillException
 {

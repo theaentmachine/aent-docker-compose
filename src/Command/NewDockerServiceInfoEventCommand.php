@@ -5,10 +5,10 @@ namespace TheAentMachine\AentDockerCompose\Command;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Yaml\Yaml;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
-use TheAentMachine\AentDockerCompose\Aenthill\JsonEventCommand;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
 use TheAentMachine\AentDockerCompose\Service\Service;
 use TheAentMachine\AentDockerCompose\YamlTools\YamlTools;
+use TheAentMachine\JsonEventCommand;
 
 class NewDockerServiceInfoEventCommand extends JsonEventCommand
 {

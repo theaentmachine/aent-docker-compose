@@ -2,13 +2,11 @@
 
 namespace TheAentMachine\AentDockerCompose\Command;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
-use TheAentMachine\AentDockerCompose\Aenthill\JsonEventCommand;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
+use TheAentMachine\JsonEventCommand;
 
 class RemoveEventCommand extends JsonEventCommand
 {

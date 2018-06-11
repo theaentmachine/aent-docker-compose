@@ -5,8 +5,9 @@ namespace TheAentMachine\AentDockerCompose\Command;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
 use TheAentMachine\AentDockerCompose\Aenthill\Hercule;
 use TheAentMachine\AentDockerCompose\Aenthill\Hermes;
+use TheAentMachine\EventCommand;
 
-class AddEventCommand extends \TheAentMachine\AentDockerCompose\Aenthill\EventCommand
+class AddEventCommand extends EventCommand
 {
     protected function getEventName(): string
     {
