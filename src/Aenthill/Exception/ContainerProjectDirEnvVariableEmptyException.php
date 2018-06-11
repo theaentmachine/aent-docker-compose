@@ -1,4 +1,5 @@
 <?php
+
 namespace TheAentMachine\AentDockerCompose\Aenthill\Exception;
 
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\PheromoneEnum;

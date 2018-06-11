@@ -5,7 +5,6 @@ namespace TheAentMachine\AentDockerCompose\Service;
 use TheAentMachine\AentDockerCompose\Service\Enum\VolumeTypeEnum;
 use TheAentMachine\AentDockerCompose\Service\Exception\EmptyAttributeException;
 use TheAentMachine\AentDockerCompose\Service\Exception\KeysMissingInArrayException;
-use TheAentMachine\AentDockerCompose\Service\Exception\PayloadInvalidJsonException;
 use TheAentMachine\AentDockerCompose\Service\Exception\VolumeTypeException;
 
 class Service
@@ -126,26 +125,27 @@ class Service
 
     /**
      * @param mixed[] $payload
+     * @return Service
      * @throws EmptyAttributeException
      * @throws KeysMissingInArrayException
-     * @throws PayloadInvalidJsonException
      * @throws VolumeTypeException
      */
-    public static function parsePayload(array $payload): self
+    public static function parsePayload(array $payload): Service
     {
         $service = new Service();
         $service->serviceName = $payload['serviceName'] ?? '';
-        $service = $payload['service'] ?? array();
-        if (!empty($service)) {
-            $service->image = $service['image'] ?? '';
-            $service->internalPorts = $service['internalPorts'] ?? '';
-            $service->dependsOn = $service['dependsOn'] ?? array();
-            $service->ports = $service['ports'] ?? array();
-            $service->labels = $service['labels'] ?? array();
-            $service->environments = $service['environments'] ?? array();
-            $service->volumes = $service['volumes'] ?? array();
+        $s = $payload['service'] ?? array();
+        if (!empty($s)) {
+            $service->image = $s['image'] ?? '';
+            $service->internalPorts = $s['internalPorts'] ?? '';
+            $service->dependsOn = $s['dependsOn'] ?? array();
+            $service->ports = $s['ports'] ?? array();
+            $service->labels = $s['labels'] ?? array();
+            $service->environments = $s['environments'] ?? array();
+            $service->volumes = $s['volumes'] ?? array();
         }
         $service->checkValidity(true);
+        return $service;
     }
 
     /**
@@ -201,7 +201,7 @@ class Service
                 }
                 return false;
             }
-            if (!in_array($v['type'], $wantedTypes)) {
+            if (!\in_array($v['type'], $wantedTypes, true)) {
                 if ($throwException) {
                     throw new VolumeTypeException($v['type']);
                 }
@@ -226,7 +226,7 @@ class Service
         }
 
         $portMap = function ($port) {
-            return array($port['source'], $port['target']);
+            return $port['source'] . ':' . $port['target'];
         };
 
         $keyValueMap = function ($item) {
@@ -234,14 +234,14 @@ class Service
         };
 
         $dockerService = array(
-            "services" => Utils::arrayFilterRec(array(
+            'services' => Utils::arrayFilterRec(array(
                 $this->serviceName => [
-                    "image" => $this->image,
-                    "depends_on" => $this->dependsOn,
-                    "ports" => array_map($portMap, $this->ports),
-                    "labels" => array_map($keyValueMap, $this->labels),
-                    "environments" => array_map($keyValueMap, $this->environments),
-                    "volumes" => $this->volumes,
+                    'image' => $this->image,
+                    'depends_on' => $this->dependsOn,
+                    'ports' => array_map($portMap, $this->ports),
+                    'labels' => array_map($keyValueMap, $this->labels),
+                    'environments' => array_map($keyValueMap, $this->environments),
+                    'volumes' => $this->volumes,
                 ],
             )),
         );

@@ -2,4 +2,4 @@
 
 set -e
 
-php /src/aent.php handle $@;
+php /src/aent.php $@;

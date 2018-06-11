@@ -12,8 +12,8 @@ class Utils
     public static function arrayFilterRec(array $input): array
     {
         foreach ($input as &$value) {
-            if (is_array($value)) {
-                $value = Utils::arrayFilterRec($value);
+            if (\is_array($value)) {
+                $value = self::arrayFilterRec($value);
             }
         }
         return array_filter($input);
