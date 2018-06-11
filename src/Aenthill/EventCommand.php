@@ -26,13 +26,14 @@ abstract class EventCommand extends Command
     protected $output;
 
     abstract protected function getEventName(): string;
+
     abstract protected function executeEvent(?string $payload): void;
 
     protected function configure()
     {
         $this
             ->setName($this->getEventName())
-            ->setDescription('Handle the "'.$this->getEventName().'" event')
+            ->setDescription('Handle the "' . $this->getEventName() . '" event')
             ->addArgument('payload', InputArgument::OPTIONAL, 'The event payload');
     }
 

@@ -1,11 +1,12 @@
 <?php
+
 namespace TheAentMachine\AentDockerCompose\Aenthill;
 
 use Symfony\Component\Process\Process;
 
 class Hercule
 {
-    const BINARY = 'hercule';
+    public const BINARY = 'hercule';
 
     /**
      * @param string[] $events
@@ -13,7 +14,7 @@ class Hercule
      */
     public static function setHandledEvents(array $events): void
     {
-        $command = Hercule::BINARY . ' set:handled-events';
+        $command = self::BINARY . ' set:handled-events';
         foreach ($events as $event) {
             $command .= " $event";
         }

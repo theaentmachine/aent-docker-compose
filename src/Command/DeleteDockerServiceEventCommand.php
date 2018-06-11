@@ -2,8 +2,6 @@
 
 namespace TheAentMachine\AentDockerCompose\Command;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
 use TheAentMachine\AentDockerCompose\Aenthill\JsonEventCommand;
 

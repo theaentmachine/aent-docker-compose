@@ -4,15 +4,15 @@ namespace TheAentMachine\AentDockerCompose\Service\Enum;
 
 class VolumeTypeEnum
 {
-    const VOLUME = 'volume';
-    const BIND = 'bind';
-    const TMPFS = 'tmpfs';
+    public const VOLUME = 'volume';
+    public const BIND = 'bind';
+    public const TMPFS = 'tmpfs';
 
     /**
      * @return string[]
      */
-    public static function getVolumeTypes() : array
+    public static function getVolumeTypes(): array
     {
-        return array(VolumeTypeEnum::VOLUME, VolumeTypeEnum::BIND, VolumeTypeEnum::TMPFS);
+        return array(self::VOLUME, self::BIND, self::TMPFS);
     }
 }

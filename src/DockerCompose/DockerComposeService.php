@@ -2,12 +2,10 @@
 
 namespace TheAentMachine\AentDockerCompose\DockerCompose;
 
-use Nette\NotImplementedException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Finder\Finder;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\PheromoneEnum;
 use TheAentMachine\AentDockerCompose\Aenthill\Exception\ContainerProjectDirEnvVariableEmptyException;
-use TheAentMachine\AentDockerCompose\Aenthill\LogLevelConfigurator;
 
 class DockerComposeService
 {

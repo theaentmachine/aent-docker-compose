@@ -1,6 +1,5 @@
 <?php
 
-
 namespace TheAentMachine\AentDockerCompose\Aenthill;
 
 use Symfony\Component\Console\Application;
