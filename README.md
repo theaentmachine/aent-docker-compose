@@ -40,7 +40,7 @@ Payload format (JSON) :
     "dependsOn"     : ["foo"],
     "ports"         : [{"source": 80, "target": 8080}],
     "labels"        : [{"key": "foo", "value": "bar"}],
-    "environments"   : [{"key": "FOO", "value": "bar"}],
+    "environment"   : [{"key": "FOO", "value": "bar"}],
     "volumes": [
       {
         "type"        : "volume|bind|tmpfs",

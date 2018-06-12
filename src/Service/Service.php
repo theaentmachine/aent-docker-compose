@@ -23,7 +23,7 @@ class Service
     /** @var array */
     protected $labels;
     /** @var array */
-    protected $environments;
+    protected $environment;
     /** @var array */
     protected $volumes;
 
@@ -38,7 +38,7 @@ class Service
         $this->dependsOn = array();
         $this->ports = array();
         $this->labels = array();
-        $this->environments = array();
+        $this->environment = array();
         $this->volumes = array();
     }
 
@@ -104,12 +104,12 @@ class Service
     }
 
     /**
-     * @param string[] $environments
+     * @param string[] $environment
      * @return Service
      */
-    public function setEnvironments(array $environments): Service
+    public function setEnvironment(array $environment): Service
     {
-        $this->environments = $environments;
+        $this->environment = $environment;
         return $this;
     }
 
@@ -141,7 +141,7 @@ class Service
             $service->dependsOn = $s['dependsOn'] ?? array();
             $service->ports = $s['ports'] ?? array();
             $service->labels = $s['labels'] ?? array();
-            $service->environments = $s['environments'] ?? array();
+            $service->environment = $s['environment'] ?? array();
             $service->volumes = $s['volumes'] ?? array();
         }
         $service->checkValidity(true);
@@ -183,7 +183,7 @@ class Service
                 return false;
             }
         }
-        foreach ($this->environments as $environment) {
+        foreach ($this->environment as $environment) {
             if (!array_key_exists('key', $environment) || !array_key_exists('value', $environment)) {
                 if ($throwException) {
                     throw new KeysMissingInArrayException($environment, $wantedKeys);
@@ -240,7 +240,7 @@ class Service
                     'depends_on' => $this->dependsOn,
                     'ports' => array_map($portMap, $this->ports),
                     'labels' => array_map($keyValueMap, $this->labels),
-                    'environments' => array_map($keyValueMap, $this->environments),
+                    'environment' => array_map($keyValueMap, $this->environment),
                     'volumes' => $this->volumes,
                 ],
             )),
