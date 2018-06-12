@@ -1,4 +1,5 @@
 <?php
+
 namespace TheAentMachine\AentDockerCompose\Aenthill\Enum;
 
 class PheromoneEnum

@@ -22,6 +22,7 @@ class NewDockerServiceInfoEventCommand extends JsonEventCommand
     {
         $service = Service::parsePayload($payload);
         $formattedPayload = $service->serializeToDockerComposeService(false);
+        print_r($formattedPayload);
         $yml = Yaml::dump($formattedPayload, 256, 4, Yaml::DUMP_OBJECT_AS_MAP);
         file_put_contents(YamlTools::TMP_YAML_FILE, $yml);
 
@@ -32,7 +33,7 @@ class NewDockerServiceInfoEventCommand extends JsonEventCommand
         } else {
             $helper = $this->getHelper('question');
             $question = new ChoiceQuestion(
-                'Please choose the docker-compose files in which the service will be added : ',
+                'Please choose the docker-compose file(s) in which the service will be added (e.g. 0,1) : ',
                 $dockerComposeFilePathnames,
                 null
             );
@@ -44,6 +45,6 @@ class NewDockerServiceInfoEventCommand extends JsonEventCommand
         foreach ($toMerge as $file) {
             YamlTools::merge($file, YamlTools::TMP_YAML_FILE, $file);
         }
-        unlink(YamlTools::TMP_YAML_FILE);
+        // unlink(YamlTools::TMP_YAML_FILE);
     }
 }

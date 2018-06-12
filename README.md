@@ -64,7 +64,7 @@ Payload format (JSON) :
 ```
 {
   "serviceName" : "foo",
-  "namedVolume" : ["bar"]
+  "namedVolumes" : ["bar"]
 }
 ```
 

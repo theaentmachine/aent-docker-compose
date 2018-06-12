@@ -6,19 +6,17 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
-use TheAentMachine\JsonEventCommand;
+use TheAentMachine\EventCommand;
 
-class RemoveEventCommand extends JsonEventCommand
+class RemoveEventCommand extends EventCommand
 {
     protected function getEventName(): string
     {
         return EventEnum::REMOVE;
     }
 
-    protected function executeJsonEvent(array $payload): void
+    protected function executeEvent(?string $payload): void
     {
-        $dockerComposeService = new DockerComposeService($this->log);
-
         $helper = $this->getHelper('question');
         $question = new ConfirmationQuestion(
             "Do you want to delete your docker-compose file(s) ? [y/N]\n > ",
@@ -27,11 +25,12 @@ class RemoveEventCommand extends JsonEventCommand
         $doDelete = $helper->ask($this->input, $this->output, $question);
 
         if ($doDelete) {
+            $dockerComposeService = new DockerComposeService($this->log);
             $dockerComposeFilePathnames = $dockerComposeService->getDockerComposePathnames();
 
             $helper = $this->getHelper('question');
             $question = new ChoiceQuestion(
-                'Please choose the docker-compose files you want to delete : ',
+                'Please choose the docker-compose file(s) you want to delete (e.g. 0,1) : ',
                 $dockerComposeFilePathnames,
                 null
             );
