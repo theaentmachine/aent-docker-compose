@@ -2,7 +2,10 @@
 
 namespace TheAentMachine\AentDockerCompose\Command;
 
+use Symfony\Component\Yaml\Yaml;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
+use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
+use TheAentMachine\AentDockerCompose\YamlTools\YamlTools;
 use TheAentMachine\JsonEventCommand;
 
 class DeleteDockerServiceEventCommand extends JsonEventCommand
@@ -14,41 +17,27 @@ class DeleteDockerServiceEventCommand extends JsonEventCommand
 
     protected function executeJsonEvent(array $payload): void
     {
-        throw new \RuntimeException('Not implemented yet');
-        // TODO : ask for services to delete
-        /*
-        $payload = json_decode($input->getArgument('payload'), true);
+        $dockerComposeService = new DockerComposeService($this->log);
+        $dockerComposeFilePathnames = $dockerComposeService->getDockerComposePathnames();
 
-        // $dockerComposePath = getenv('PHEROMONE_CONTAINER_PROJECT_DIR') . '/docker-compose.yml';
-        $dockerComposePath = getenv('PHEROMONE_CONTAINER_PROJECT_DIR') . '/aenthill/docker-compose.yml';
+        print_r($payload);
 
-        if (empty($payload)) {
-            $yml = Yaml::parseFile($dockerComposePath);
-            //$service = array_search('service', array_column($yml, 'service'));
-            $services = array_keys($yml['services']);
-            // $volumes = $yml['volumes'];
-            $helper = $this->getHelper('question');
-            $question = new ChoiceQuestion(
-                'Please choose the services you want to detele, if any :',
-                $services,
-                null
-            );
-            $question->setMultiselect(true);
-            $servicesToDelete = $helper->ask($input, $output, $question);
-
-            // print_r($servicesToDelete);
-
-            foreach ($servicesToDelete as $s) {
-                $this->deleteElementInDockerCompose('services.' . $s, $dockerComposePath, $output);
+        foreach ($dockerComposeFilePathnames as $file) {
+            $ymlData = Yaml::parseFile($file);
+            if (array_key_exists('serviceName', $ymlData) && array_key_exists($payload['serviceName'], $ymlData['services'])) {
+                $toDelete = 'services.' . $payload['serviceName'];
+                $this->log->info('deleting ' . $toDelete . ' in ' . $file);
+                YamlTools::delete($toDelete, $file, $file);
             }
-        } else {
-            $elemToDelete = "services." . $payload[Cst::SERVICE_NAME_KEY];
-            $this->deleteElementInDockerCompose($elemToDelete, $dockerComposePath, $output);
-
-            foreach ($payload[Cst::NAMED_VOLUMES_KEY] as $v) {
-                $elemToDelete = "volumes." . $v;
-                $this->deleteElementInDockerCompose($elemToDelete, $dockerComposePath, $output);
+            if (array_key_exists('namedVolumes', $payload) && array_key_exists('volumes', $ymlData)) {
+                foreach ($payload['namedVolumes'] as $namedVolume) {
+                    if (array_key_exists($namedVolume, $ymlData['volumes'])) {
+                        $toDelete = 'volumes.' . $namedVolume;
+                        $this->log->info('deleting ' . $toDelete . ' in ' . $file);
+                        YamlTools::delete($toDelete, $file, $file);
+                    }
+                }
             }
-        }*/
+        }
     }
 }
