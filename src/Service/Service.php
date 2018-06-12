@@ -183,8 +183,10 @@ class Service
                 return false;
             }
         }
+
+        $wantedKeys = array('key');
         foreach ($this->environment as $environment) {
-            if (!array_key_exists('key', $environment) || !array_key_exists('value', $environment)) {
+            if (!array_key_exists('key', $environment)) {
                 if ($throwException) {
                     throw new KeysMissingInArrayException($environment, $wantedKeys);
                 }
