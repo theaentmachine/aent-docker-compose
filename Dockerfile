@@ -1,6 +1,7 @@
 FROM thecodingmachine/php:7.2-v1-cli as builder
 
 COPY composer.json composer.json
+COPY composer.lock composer.lock
 
 RUN composer install --no-dev
 
