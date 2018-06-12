@@ -20,7 +20,7 @@ class DeleteDockerServiceEventCommand extends JsonEventCommand
         $dockerComposeService = new DockerComposeService($this->log);
         $dockerComposeFilePathnames = $dockerComposeService->getDockerComposePathnames();
 
-        print_r($payload);
+        $this->log->debug(json_encode($payload, JSON_PRETTY_PRINT));
 
         foreach ($dockerComposeFilePathnames as $file) {
             $ymlData = Yaml::parseFile($file);

@@ -22,7 +22,9 @@ class NewDockerServiceInfoEventCommand extends JsonEventCommand
     {
         $service = Service::parsePayload($payload);
         $formattedPayload = $service->serializeToDockerComposeService(false);
-        print_r($formattedPayload);
+
+        $this->log->debug(json_encode($formattedPayload, JSON_PRETTY_PRINT));
+
         $yml = Yaml::dump($formattedPayload, 256, 4, Yaml::DUMP_OBJECT_AS_MAP);
         file_put_contents(YamlTools::TMP_YAML_FILE, $yml);
 
@@ -45,6 +47,7 @@ class NewDockerServiceInfoEventCommand extends JsonEventCommand
         foreach ($toMerge as $file) {
             YamlTools::merge($file, YamlTools::TMP_YAML_FILE, $file);
         }
-        // unlink(YamlTools::TMP_YAML_FILE);
+
+        unlink(YamlTools::TMP_YAML_FILE);
     }
 }
