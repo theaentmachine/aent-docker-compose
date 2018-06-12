@@ -137,7 +137,7 @@ class Service
         $s = $payload['service'] ?? array();
         if (!empty($s)) {
             $service->image = $s['image'] ?? '';
-            $service->internalPorts = $s['internalPorts'] ?? '';
+            $service->internalPorts = $s['internalPorts'] ?? array();
             $service->dependsOn = $s['dependsOn'] ?? array();
             $service->ports = $s['ports'] ?? array();
             $service->labels = $s['labels'] ?? array();

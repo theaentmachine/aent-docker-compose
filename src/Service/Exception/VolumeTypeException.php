@@ -16,6 +16,6 @@ class VolumeTypeException extends ServiceException
     public function __construct(string $invalidVolumeType)
     {
         $this->invalidVolumeType = $invalidVolumeType;
-        parent::__construct($this->invalidVolumeType . " is not a valid volume type. Are accepted : " . VolumeTypeEnum::getVolumeTypes());
+        parent::__construct($this->invalidVolumeType . " is not a valid volume type. Are accepted : " . json_encode(VolumeTypeEnum::getVolumeTypes()));
     }
 }
