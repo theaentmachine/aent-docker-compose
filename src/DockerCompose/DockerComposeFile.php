@@ -1,4 +1,5 @@
 <?php
+
 namespace TheAentMachine\AentDockerCompose\DockerCompose;
 
 class DockerComposeFile
@@ -21,5 +22,13 @@ class DockerComposeFile
     public function getFilename(): string
     {
         return $this->file->getFilename();
+    }
+
+    /**
+     * @return string
+     */
+    public function getPathname(): string
+    {
+        return $this->file->getPathname();
     }
 }

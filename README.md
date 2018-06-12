@@ -17,12 +17,18 @@
 ## events
 
 ### ADD
-`$ aent ADD`
+`$ aent handle ADD`
 
-Sent by aenthill, 
+todo
 
-### ADD-DOCKER-SERVICE
-`$ aent ADD-DOCKER-SERVICE {payload}`
+### REMOVE
+`$ aent handle REMOVE`
+
+todo
+
+
+### NEW_DOCKER_SERVICE_INFO
+`$ aent handle NEW_DOCKER_SERVICE_INFO {payload}|null`
 
 Payload format (JSON) :
 ```
@@ -58,7 +64,7 @@ Payload format (JSON) :
 ```
 {
   "serviceName" : "foo",
-  "namedVolume" : ["bar"]
+  "namedVolumes" : ["bar"]
 }
 ```
 

@@ -14,7 +14,9 @@
     "symfony/console": "^4.0",
     "symfony/yaml": "^4.0",
     "symfony/process": "^4.1",
-    "symfony/finder": "^4.1"
+    "symfony/finder": "^4.1",
+    "psr/log": "^1",
+    "theaentmachine/aent-console": "^1"
   },
   "require-dev" : {
     "phpunit/phpunit": "^7",
@@ -37,5 +39,7 @@
     "cs-check": "phpcs",
     "phpstan": "phpstan analyse src -c phpstan.neon --level=7 --no-progress -vvv",
     "phpunit": "phpunit --configuration phpunit.xml.dist"
-  }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }

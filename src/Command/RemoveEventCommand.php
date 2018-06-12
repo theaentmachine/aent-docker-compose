@@ -2,24 +2,48 @@
 
 namespace TheAentMachine\AentDockerCompose\Command;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
+use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
+use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
+use TheAentMachine\EventCommand;
 
 class RemoveEventCommand extends EventCommand
 {
-    protected function configure()
+    protected function getEventName(): string
     {
-        $this
-            ->setName(Cst::REMOVE_EVENT)
-            ->setDescription("An event from aenthill")
-            ->setHelp('TODO')
-            ->addArgument('payload', InputArgument::OPTIONAL, "The payload of the event");
+        return EventEnum::REMOVE;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function executeEvent(?string $payload): void
     {
-        // TODO
+        $helper = $this->getHelper('question');
+        $question = new ConfirmationQuestion(
+            "Do you want to delete your docker-compose file(s) ? [y/N]\n > ",
+            false
+        );
+        $doDelete = $helper->ask($this->input, $this->output, $question);
+
+        if ($doDelete) {
+            $dockerComposeService = new DockerComposeService($this->log);
+            $dockerComposeFilePathnames = $dockerComposeService->getDockerComposePathnames();
+
+            $helper = $this->getHelper('question');
+            $question = new ChoiceQuestion(
+                'Please choose the docker-compose file(s) you want to delete (e.g. 0,1) : ',
+                $dockerComposeFilePathnames,
+                null
+            );
+            $question->setMultiselect(true);
+
+            $toDelete = $helper->ask($this->input, $this->output, $question);
+
+            if (!empty($toDelete)) {
+                foreach ($toDelete as $file) {
+                    $this->log->info('Deleting ' . $file);
+                    unlink($file);
+                }
+            }
+        }
     }
 }
