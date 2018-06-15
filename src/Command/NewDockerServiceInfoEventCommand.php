@@ -10,6 +10,7 @@ use TheAentMachine\AentDockerCompose\YamlTools\YamlTools;
 use TheAentMachine\Hercule;
 use TheAentMachine\JsonEventCommand;
 use TheAentMachine\Service\Enum\VolumeTypeEnum;
+use TheAentMachine\Service\Environment\EnvVariable;
 use TheAentMachine\Service\Service;
 
 class NewDockerServiceInfoEventCommand extends JsonEventCommand
@@ -67,8 +68,8 @@ class NewDockerServiceInfoEventCommand extends JsonEventCommand
         $labelMap = function (string $key, array $label): string {
             return $key . '=' . $label['value'];
         };
-        $envMap = function (string $key, array $env): string {
-            return $key . '=' . $env['value'];
+        $envMap = function (string $key, EnvVariable $env): string {
+            return $key . '=' . $env->getValue();
         };
         $jsonSerializeMap = function (\JsonSerializable $obj): array {
             return $obj->jsonSerialize();
@@ -86,10 +87,10 @@ class NewDockerServiceInfoEventCommand extends JsonEventCommand
             )),
         );
         $namedVolumes = array();
-        foreach ($dockerService['services']['volumes'] as $volume) {
-            if ($volume['type'] === VolumeTypeEnum::NAMED_VOLUME) {
+        foreach ($service->getVolumes() as $volume) {
+            if ($volume->getType() === VolumeTypeEnum::NAMED_VOLUME) {
                 // for now we just add them without any option
-                $namedVolumes[$volume['source']] = null;
+                $namedVolumes[$volume->getSource()] = null;
             }
         }
         if (!empty($namedVolumes)) {
