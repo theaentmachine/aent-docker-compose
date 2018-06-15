@@ -7,6 +7,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
 use TheAentMachine\EventCommand;
+use TheAentMachine\Hercule;
 
 class RemoveEventCommand extends EventCommand
 {
@@ -17,6 +18,8 @@ class RemoveEventCommand extends EventCommand
 
     protected function executeEvent(?string $payload): void
     {
+        Hercule::setHandledEvents(EventEnum::getHandledEvents());
+
         $helper = $this->getHelper('question');
         $question = new ConfirmationQuestion(
             "Do you want to delete your docker-compose file(s) ? [y/N]\n > ",
