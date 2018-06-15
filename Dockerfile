@@ -33,17 +33,14 @@ ENV YAML_TOOLS_VERSION "0.0.2"
 RUN wget -q https://raw.githubusercontent.com/thecodingmachine/yaml-tools/$YAML_TOOLS_VERSION/src/yaml_tools.py -O /usr/bin/yaml-tools &&\
     chmod +x /usr/bin/yaml-tools
 
-# Installs Hermes.
+# Installs Hermes. You may find all available versions in the releases page: https://github.com/aenthill/hermes/releases/.
 ENV HERMES_VERSION "0.0.8"
-RUN wget -qO- https://github.com/aenthill/hermes/releases/download/$HERMES_VERSION/hermes_linux_amd64.tar.gz | tar xvz -C . &&\
-    mv ./hermes /usr/bin &&\
-    rm -f LICENSE README.md
+RUN curl -sf https://raw.githubusercontent.com/aenthill/hermes/master/install.sh | BINDIR=/usr/bin sh -s $HERMES_VERSION
 
-# Installs Hercule.
+# Installs Hercule. You may find all available versions in the releases page: https://github.com/aenthill/hercule/releases/.
 ENV HERCULE_VERSION "0.0.4"
-RUN wget -qO- https://github.com/aenthill/hercule/releases/download/$HERCULE_VERSION/hercule_linux_amd64.tar.gz | tar xvz -C . &&\
-    mv ./hercule /usr/bin &&\
-    rm -f LICENSE README.md
+RUN curl -sf https://raw.githubusercontent.com/aenthill/hercule/master/install.sh | BINDIR=/usr/bin sh -s $HERCULE_VERSION
+
 
 # Copies our aent entry point.
 COPY aent.sh /usr/bin/aent

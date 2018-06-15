@@ -6,9 +6,11 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Yaml\Yaml;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
-use TheAentMachine\AentDockerCompose\Service\Service;
 use TheAentMachine\AentDockerCompose\YamlTools\YamlTools;
+use TheAentMachine\Hercule;
 use TheAentMachine\JsonEventCommand;
+use TheAentMachine\Service\Enum\VolumeTypeEnum;
+use TheAentMachine\Service\Service;
 
 class NewDockerServiceInfoEventCommand extends JsonEventCommand
 {
@@ -20,10 +22,12 @@ class NewDockerServiceInfoEventCommand extends JsonEventCommand
 
     protected function executeJsonEvent(array $payload): void
     {
-        $service = Service::parsePayload($payload);
-        $formattedPayload = $service->serializeToDockerComposeService(false);
+        Hercule::setHandledEvents(EventEnum::getHandledEvents());
 
-        $this->log->debug(json_encode($formattedPayload, JSON_PRETTY_PRINT));
+        $service = Service::parsePayload($payload);
+        $formattedPayload = $this->dockerComposeServiceSerialize($service);
+
+        // $this->log->debug(json_encode($formattedPayload, JSON_PRETTY_PRINT));
 
         $yml = Yaml::dump($formattedPayload, 256, 4, Yaml::DUMP_OBJECT_AS_MAP);
         file_put_contents(YamlTools::TMP_YAML_FILE, $yml);
@@ -49,5 +53,63 @@ class NewDockerServiceInfoEventCommand extends JsonEventCommand
         }
 
         unlink(YamlTools::TMP_YAML_FILE);
+    }
+
+    /**
+     * @param Service $service
+     * @return mixed[]
+     */
+    public function dockerComposeServiceSerialize(Service $service): array
+    {
+        $portMap = function (array $port): string {
+            return $port['source'] . ':' . $port['target'];
+        };
+        $labelMap = function (string $key, array $label): string {
+            return $key . '=' . $label['value'];
+        };
+        $envMap = function (string $key, array $env): string {
+            return $key . '=' . $env['value'];
+        };
+        $jsonSerializeMap = function (\JsonSerializable $obj): array {
+            return $obj->jsonSerialize();
+        };
+        $dockerService = array(
+            'services' => self::arrayFilterRec(array(
+                $service->getServiceName() => [
+                    'image' => $service->getImage(),
+                    'depends_on' => $service->getDependsOn(),
+                    'ports' => array_map($portMap, $service->getPorts()),
+                    'labels' => array_map($labelMap, $service->getLabels()),
+                    'environment' => array_map($envMap, $service->getEnvironment()),
+                    'volumes' => array_map($jsonSerializeMap, $service->getVolumes()),
+                ],
+            )),
+        );
+        $namedVolumes = array();
+        foreach ($dockerService['services']['volumes'] as $volume) {
+            if ($volume['type'] === VolumeTypeEnum::NAMED_VOLUME) {
+                // for now we just add them without any option
+                $namedVolumes[$volume['source']] = null;
+            }
+        }
+        if (!empty($namedVolumes)) {
+            $dockerService['volumes'] = $namedVolumes;
+        }
+        return $dockerService;
+    }
+
+    /**
+     * Delete all key/value pairs with empty value by recursively using array_filter
+     * @param array $input
+     * @return mixed[] array
+     */
+    private static function arrayFilterRec(array $input): array
+    {
+        foreach ($input as &$value) {
+            if (\is_array($value)) {
+                $value = self::arrayFilterRec($value);
+            }
+        }
+        return array_filter($input);
     }
 }

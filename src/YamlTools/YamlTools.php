@@ -6,7 +6,7 @@ use Symfony\Component\Process\Process;
 
 class YamlTools
 {
-    public const TMP_YAML_FILE = '/tmp/tmp.yml';
+    public const TMP_YAML_FILE = __DIR__ . '/tmp.yml';
 
     /**
      * Merge the content of $inputFile2 with $inputFile1's one, then write it into $outputFile (or stdout if empty)

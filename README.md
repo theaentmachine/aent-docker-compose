@@ -33,26 +33,35 @@ todo
 Payload format (JSON) :
 ```
 {
-  "serviceName" : "foo",
-  "service": {
+  "serviceName" : "foo",                                        //required
+  "service": {                                                  //required
     "image"         : "foo",
-    "internalPorts" : [123],
-    "dependsOn"     : ["foo"],
+    "internalPorts" : [1, 2, 3],
+    "dependsOn"     : ["foo", "bar"],
     "ports"         : [{"source": 80, "target": 8080}],
-    "labels"        : [{"key": "foo", "value": "bar"}],
-    "environment"   : [{"key": "FOO", "value": "bar"}],
-    "volumes": [
-      {
-        "type"        : "volume|bind|tmpfs",
-        "source"	  : "foo",
-        "target"	  : "bar",
-        "readOnly"    : true
-      }
-    ]
+    "labels"        : {
+                        "foo": {"value": "fooo"},
+                        "bar": {"value": "baar"}
+                      },
+    "environment"   : {
+                        "FOO": {
+                          "value": "fooo",                      //required
+                          "type": "sharedEnvVariable|sharedSecret|imageEnvVariable|containerEnvVariable"    //required
+                        },
+                        "BAR": {...}
+                      },
+    "volumes"       : [
+                        {
+                          "type"      : "volume|bind|tmpfs",    //required
+                          "source"    : "foo",                  //required
+                          "target"    : "bar",
+                          "readOnly"  : true|false
+                        }
+                      ]
   }
 }
 ```
-It handles named volumes by adding them inside the root **volumes** level in docker-compose.json
+It handles named volumes by adding them inside **volumes** (at root level) in docker-compose.json
 
 TODO: handle case when the service already exists
 
