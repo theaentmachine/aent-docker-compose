@@ -7,7 +7,6 @@ use Symfony\Component\Yaml\Yaml;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
 use TheAentMachine\AentDockerCompose\YamlTools\YamlTools;
-use TheAentMachine\Hermes;
 use TheAentMachine\JsonEventCommand;
 
 class DeleteDockerServiceEventCommand extends JsonEventCommand
@@ -19,8 +18,6 @@ class DeleteDockerServiceEventCommand extends JsonEventCommand
 
     protected function executeJsonEvent(array $payload): void
     {
-        Hermes::setHandledEvents(EventEnum::getHandledEvents());
-
         $dockerComposeService = new DockerComposeService($this->log);
         $dockerComposeFilePathnames = $dockerComposeService->getDockerComposePathnames();
 

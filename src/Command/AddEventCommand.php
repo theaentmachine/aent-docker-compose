@@ -15,8 +15,6 @@ class AddEventCommand extends EventCommand
 
     protected function executeEvent(?string $payload): void
     {
-        Hermes::setHandledEvents(EventEnum::getHandledEvents());
-
         Hermes::dispatch(EventEnum::ASKING_FOR_DOCKER_SERVICE_INFO);
     }
 }

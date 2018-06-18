@@ -7,7 +7,6 @@ use Symfony\Component\Yaml\Yaml;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
 use TheAentMachine\AentDockerCompose\YamlTools\YamlTools;
-use TheAentMachine\Hermes;
 use TheAentMachine\JsonEventCommand;
 use TheAentMachine\Service\Enum\VolumeTypeEnum;
 use TheAentMachine\Service\Environment\EnvVariable;
@@ -24,8 +23,6 @@ class NewDockerServiceInfoEventCommand extends JsonEventCommand
 
     protected function executeJsonEvent(array $payload): void
     {
-        Hermes::setHandledEvents(EventEnum::getHandledEvents());
-
         $service = Service::parsePayload($payload);
         $formattedPayload = $this->dockerComposeServiceSerialize($service);
 
