@@ -7,11 +7,12 @@ use Symfony\Component\Yaml\Yaml;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
 use TheAentMachine\AentDockerCompose\YamlTools\YamlTools;
-use TheAentMachine\Hercule;
+use TheAentMachine\Hermes;
 use TheAentMachine\JsonEventCommand;
 use TheAentMachine\Service\Enum\VolumeTypeEnum;
 use TheAentMachine\Service\Environment\EnvVariable;
 use TheAentMachine\Service\Service;
+use TheAentMachine\Service\Volume\Volume;
 
 class NewDockerServiceInfoEventCommand extends JsonEventCommand
 {
@@ -23,7 +24,7 @@ class NewDockerServiceInfoEventCommand extends JsonEventCommand
 
     protected function executeJsonEvent(array $payload): void
     {
-        Hercule::setHandledEvents(EventEnum::getHandledEvents());
+        Hermes::setHandledEvents(EventEnum::getHandledEvents());
 
         $service = Service::parsePayload($payload);
         $formattedPayload = $this->dockerComposeServiceSerialize($service);
@@ -87,6 +88,7 @@ class NewDockerServiceInfoEventCommand extends JsonEventCommand
             )),
         );
         $namedVolumes = array();
+        /** @var Volume $volume */
         foreach ($service->getVolumes() as $volume) {
             if ($volume->getType() === VolumeTypeEnum::NAMED_VOLUME) {
                 // for now we just add them without any option
