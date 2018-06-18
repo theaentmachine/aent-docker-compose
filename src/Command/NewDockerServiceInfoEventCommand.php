@@ -74,7 +74,7 @@ class NewDockerServiceInfoEventCommand extends JsonEventCommand
         };
         $dockerService = [
             'services' => [
-                $service->getServiceName() => [
+                $service->getServiceName() => array_filter([
                     'image' => $service->getImage(),
                     'command' => $service->getCommand(),
                     'depends_on' => $service->getDependsOn(),
@@ -82,7 +82,7 @@ class NewDockerServiceInfoEventCommand extends JsonEventCommand
                     'labels' => array_map($labelMap, array_keys($service->getLabels()), $service->getLabels()),
                     'environment' => array_map($envMap, array_keys($service->getEnvironment()), $service->getEnvironment()),
                     'volumes' => array_map($jsonSerializeMap, $service->getVolumes()),
-                ],
+                ]),
             ],
         ];
         $namedVolumes = array();
