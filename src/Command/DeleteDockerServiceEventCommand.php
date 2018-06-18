@@ -61,7 +61,7 @@ class DeleteDockerServiceEventCommand extends JsonEventCommand
     private function getDeleteConfirmationQuestion(string $elementToDel, bool $default = false): ConfirmationQuestion
     {
         return new ConfirmationQuestion(
-            "Do you want to delete $elementToDel ? [y/N]\n > ",
+            "Do you want to delete $elementToDel ? (y/n)\n > ",
             $default
         );
     }
