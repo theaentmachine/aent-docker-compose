@@ -66,24 +66,25 @@ class NewDockerServiceInfoEventCommand extends JsonEventCommand
         $labelMap = function (string $key, array $label): string {
             return $key . '=' . $label['value'];
         };
-        $envMap = function (string $key, EnvVariable $env): string {
-            return $key . '=' . $env->getValue();
+        $envMap = function (string $key, EnvVariable $env): array {
+            return [$key => $env->getValue()];
         };
         $jsonSerializeMap = function (\JsonSerializable $obj): array {
             return $obj->jsonSerialize();
         };
-        $dockerService = array(
-            'services' => self::arrayFilterRec(array(
+        $dockerService = [
+            'services' => [
                 $service->getServiceName() => [
                     'image' => $service->getImage(),
+                    'command' => $service->getCommand(),
                     'depends_on' => $service->getDependsOn(),
                     'ports' => array_map($portMap, $service->getPorts()),
                     'labels' => array_map($labelMap, array_keys($service->getLabels()), $service->getLabels()),
                     'environment' => array_map($envMap, array_keys($service->getEnvironment()), $service->getEnvironment()),
                     'volumes' => array_map($jsonSerializeMap, $service->getVolumes()),
                 ],
-            )),
-        );
+            ],
+        ];
         $namedVolumes = array();
         /** @var Volume $volume */
         foreach ($service->getVolumes() as $volume) {
