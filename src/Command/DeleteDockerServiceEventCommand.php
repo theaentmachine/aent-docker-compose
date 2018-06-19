@@ -7,7 +7,6 @@ use Symfony\Component\Yaml\Yaml;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
 use TheAentMachine\AentDockerCompose\YamlTools\YamlTools;
-use TheAentMachine\Hercule;
 use TheAentMachine\JsonEventCommand;
 
 class DeleteDockerServiceEventCommand extends JsonEventCommand
@@ -19,8 +18,6 @@ class DeleteDockerServiceEventCommand extends JsonEventCommand
 
     protected function executeJsonEvent(array $payload): void
     {
-        Hercule::setHandledEvents(EventEnum::getHandledEvents());
-
         $dockerComposeService = new DockerComposeService($this->log);
         $dockerComposeFilePathnames = $dockerComposeService->getDockerComposePathnames();
 
@@ -61,7 +58,7 @@ class DeleteDockerServiceEventCommand extends JsonEventCommand
     private function getDeleteConfirmationQuestion(string $elementToDel, bool $default = false): ConfirmationQuestion
     {
         return new ConfirmationQuestion(
-            "Do you want to delete $elementToDel ? [y/N]\n > ",
+            "Do you want to delete $elementToDel ? (y/n)\n > ",
             $default
         );
     }

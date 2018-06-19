@@ -28,19 +28,17 @@ RUN wget -qO- https://download.docker.com/linux/static/stable/x86_64/docker-$DOC
     mv ./docker/docker /usr/bin &&\
     rm -rf ./docker
 
+# Installs docker-compose
+RUN pip install docker-compose
+
 # Installs yaml-tools
 ENV YAML_TOOLS_VERSION "0.0.2"
 RUN wget -q https://raw.githubusercontent.com/thecodingmachine/yaml-tools/$YAML_TOOLS_VERSION/src/yaml_tools.py -O /usr/bin/yaml-tools &&\
     chmod +x /usr/bin/yaml-tools
 
 # Installs Hermes. You may find all available versions in the releases page: https://github.com/aenthill/hermes/releases/.
-ENV HERMES_VERSION "0.0.8"
+ENV HERMES_VERSION "0.0.11"
 RUN curl -sf https://raw.githubusercontent.com/aenthill/hermes/master/install.sh | BINDIR=/usr/bin sh -s $HERMES_VERSION
-
-# Installs Hercule. You may find all available versions in the releases page: https://github.com/aenthill/hercule/releases/.
-ENV HERCULE_VERSION "0.0.4"
-RUN curl -sf https://raw.githubusercontent.com/aenthill/hercule/master/install.sh | BINDIR=/usr/bin sh -s $HERCULE_VERSION
-
 
 # Copies our aent entry point.
 COPY aent.sh /usr/bin/aent
