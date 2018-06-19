@@ -28,6 +28,9 @@ RUN wget -qO- https://download.docker.com/linux/static/stable/x86_64/docker-$DOC
     mv ./docker/docker /usr/bin &&\
     rm -rf ./docker
 
+# Installs docker-compose
+RUN pip install docker-compose
+
 # Installs yaml-tools
 ENV YAML_TOOLS_VERSION "0.0.2"
 RUN wget -q https://raw.githubusercontent.com/thecodingmachine/yaml-tools/$YAML_TOOLS_VERSION/src/yaml_tools.py -O /usr/bin/yaml-tools &&\
