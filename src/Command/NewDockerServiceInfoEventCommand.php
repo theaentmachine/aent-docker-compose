@@ -27,7 +27,7 @@ class NewDockerServiceInfoEventCommand extends JsonEventCommand
 
         $yml = Yaml::dump($formattedPayload, 256, 4, Yaml::DUMP_OBJECT_AS_MAP);
         file_put_contents(YamlTools::TMP_YAML_FILE, $yml);
-        DockerComposeService::checkDockerComposeFileValidity(YamlTools::TMP_YAML_FILE);
+
 
         $dockerComposeService = new DockerComposeService($this->log);
         $dockerComposeFilePathnames = $dockerComposeService->getDockerComposePathnames();
@@ -46,9 +46,12 @@ class NewDockerServiceInfoEventCommand extends JsonEventCommand
         }
 
         foreach ($toMerge as $file) {
-            YamlTools::merge($file, YamlTools::TMP_YAML_FILE, $file);
+            YamlTools::merge($file, YamlTools::TMP_YAML_FILE, YamlTools::TMP_MERGED_FILE);
+            DockerComposeService::checkDockerComposeFileValidity(YamlTools::TMP_MERGED_FILE);
+            copy(YamlTools::TMP_MERGED_FILE, $file);
         }
 
         unlink(YamlTools::TMP_YAML_FILE);
+        unlink(YamlTools::TMP_MERGED_FILE);
     }
 }

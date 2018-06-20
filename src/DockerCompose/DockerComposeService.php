@@ -88,9 +88,9 @@ class DockerComposeService
     private function createDockerComposeFile(string $path): void
     {
         // TODO ask questions about version and so on!
-        $fp = fopen($path, 'w+b');
-        fwrite($fp, "version: '" . self::VERSION . "'");
-        fclose($fp);
+        file_put_contents($path, "version: '" . self::VERSION . "'");
+        chown($path, fileowner(\dirname($path)));
+        chgrp($path, filegroup(\dirname($path)));
 
         $file = new DockerComposeFile(new \SplFileInfo($path));
         $this->files[] = $file;
