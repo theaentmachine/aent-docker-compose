@@ -80,7 +80,7 @@ YAML;
         $payload = json_decode(self::VALID_PAYLOAD, true);
         $service = Service::parsePayload($payload);
 
-        $out = DockerComposeService::dockerComposeServiceSerialize($service, '3.3');
+        $out = DockerComposeService::dockerComposeServiceSerialize($service, DockerComposeService::VERSION);
         $expected = Yaml::parse(self::PAYLOAD_AFTER_DOCKER_COMPOSE_SERVICE_SERIALIZE);
         self::assertEquals($expected, $out);
     }
