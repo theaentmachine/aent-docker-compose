@@ -88,9 +88,16 @@ class DockerComposeService
     private function createDockerComposeFile(string $path): void
     {
         // TODO ask questions about version and so on!
+//        $fp = fopen($path, 'w+b');
+//        echo '----------------------------' . posix_getpwuid(fileowner(\dirname($path) . '/.')) . PHP_EOL;
+//        chown($path, fileowner(\dirname($path)));
+//        fwrite($fp, );
+//        fclose($fp);
+
         file_put_contents($path, "version: '" . self::VERSION . "'");
-        chown($path, 1000);
-        chgrp($path, 1000);
+        chown($path, fileowner(\dirname($path)));
+        chgrp($path, filegroup(\dirname($path)));
+
         $file = new DockerComposeFile(new \SplFileInfo($path));
         $this->files[] = $file;
         $this->log->info($file->getFilename() . ' was successfully created!');
