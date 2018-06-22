@@ -15,7 +15,7 @@ class RemoveEventCommand extends EventCommand
         return EventEnum::REMOVE;
     }
 
-    protected function executeEvent(?string $payload): void
+    protected function executeEvent(?string $payload): ?string
     {
         $helper = $this->getHelper('question');
         $question = new ConfirmationQuestion(
@@ -44,6 +44,8 @@ class RemoveEventCommand extends EventCommand
                     unlink($file);
                 }
             }
+
+            return null;
         }
     }
 }

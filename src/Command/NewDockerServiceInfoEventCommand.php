@@ -18,7 +18,7 @@ class NewDockerServiceInfoEventCommand extends JsonEventCommand
         return EventEnum::NEW_DOCKER_SERVICE_INFO;
     }
 
-    protected function executeJsonEvent(array $payload): void
+    protected function executeJsonEvent(array $payload): ?array
     {
         $service = Service::parsePayload($payload);
         $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service);
@@ -53,5 +53,7 @@ class NewDockerServiceInfoEventCommand extends JsonEventCommand
 
         unlink(YamlTools::TMP_YAML_FILE);
         unlink(YamlTools::TMP_MERGED_FILE);
+
+        return null;
     }
 }
