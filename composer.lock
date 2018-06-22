@@ -741,12 +741,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/theaentmachine/aent-console.git",
-                "reference": "9bc344020f002ca839a75f6f65eb4e5ac32eee19"
+                "reference": "eb31f8cfb04d892b14bf1c57ce57720793561d81"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/theaentmachine/aent-console/zipball/9bc344020f002ca839a75f6f65eb4e5ac32eee19",
-                "reference": "9bc344020f002ca839a75f6f65eb4e5ac32eee19",
+                "url": "https://api.github.com/repos/theaentmachine/aent-console/zipball/eb31f8cfb04d892b14bf1c57ce57720793561d81",
+                "reference": "eb31f8cfb04d892b14bf1c57ce57720793561d81",
                 "shasum": ""
             },
             "require": {
@@ -800,7 +800,7 @@
             ],
             "description": "A utility PHP package to create Aents using Symfony console.",
             "homepage": "https://github.com/theaentmachine/aent-console",
-            "time": "2018-06-19T08:43:57+00:00"
+            "time": "2018-06-22T09:13:44+00:00"
         }
     ],
     "packages-dev": [
@@ -2197,16 +2197,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.2.4",
+            "version": "7.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "00bc0b93f0ff4f557e9ea766557fde96da9a03dd"
+                "reference": "400a3836ee549ae6f665323ac3f21e27eac7155f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/00bc0b93f0ff4f557e9ea766557fde96da9a03dd",
-                "reference": "00bc0b93f0ff4f557e9ea766557fde96da9a03dd",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/400a3836ee549ae6f665323ac3f21e27eac7155f",
+                "reference": "400a3836ee549ae6f665323ac3f21e27eac7155f",
                 "shasum": ""
             },
             "require": {
@@ -2222,7 +2222,7 @@
                 "php": "^7.1",
                 "phpspec/prophecy": "^1.7",
                 "phpunit/php-code-coverage": "^6.0.7",
-                "phpunit/php-file-iterator": "^2.0",
+                "phpunit/php-file-iterator": "^2.0.1",
                 "phpunit/php-text-template": "^1.2.1",
                 "phpunit/php-timer": "^2.0",
                 "sebastian/comparator": "^3.0",
@@ -2277,7 +2277,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-06-05T03:40:05+00:00"
+            "time": "2018-06-21T13:13:39+00:00"
         },
         {
             "name": "roave/better-reflection",
