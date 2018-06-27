@@ -16,7 +16,7 @@ class DeleteDockerServiceEventCommand extends JsonEventCommand
         return EventEnum::DELETE_DOCKER_SERVICE;
     }
 
-    protected function executeJsonEvent(array $payload): void
+    protected function executeJsonEvent(array $payload): ?array
     {
         $dockerComposeService = new DockerComposeService($this->log);
         $dockerComposeFilePathnames = $dockerComposeService->getDockerComposePathnames();
@@ -48,6 +48,7 @@ class DeleteDockerServiceEventCommand extends JsonEventCommand
                 }
             }
         }
+        return null;
     }
 
     /**
