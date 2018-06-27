@@ -20,6 +20,7 @@ RUN apk add --no-cache --update \
     python-dev \
     py-pip \
     build-base &&\
+    pip install -U pip setuptools wheel &&\
     pip install ruamel.yaml
 
 # Installs Docker client.
@@ -31,8 +32,8 @@ RUN wget -qO- https://download.docker.com/linux/static/stable/x86_64/docker-$DOC
 # Installs docker-compose
 RUN pip install docker-compose
 
-# Installs yaml-tools
-ENV YAML_TOOLS_VERSION "0.0.2"
+# Installs yaml-tools. You may find all available versions in the releases page: https://github.com/thecodingmachine/yaml-tools/releases
+ENV YAML_TOOLS_VERSION "0.0.3"
 RUN wget -q https://raw.githubusercontent.com/thecodingmachine/yaml-tools/$YAML_TOOLS_VERSION/src/yaml_tools.py -O /usr/bin/yaml-tools &&\
     chmod +x /usr/bin/yaml-tools
 
