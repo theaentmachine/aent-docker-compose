@@ -4,18 +4,17 @@ namespace TheAentMachine\AentDockerCompose\Command;
 
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Yaml\Yaml;
-use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
 use TheAentMachine\AentDockerCompose\YamlTools\YamlTools;
 use TheAentMachine\JsonEventCommand;
 use TheAentMachine\Service\Service;
 
-class NewDockerServiceInfoEventCommand extends JsonEventCommand
+class NewServiceEventCommand extends JsonEventCommand
 {
 
     protected function getEventName(): string
     {
-        return EventEnum::NEW_DOCKER_SERVICE_INFO;
+        return 'NEW_SERVICE';
     }
 
     protected function executeJsonEvent(array $payload): ?array

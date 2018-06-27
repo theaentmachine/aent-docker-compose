@@ -2,7 +2,6 @@
 
 namespace TheAentMachine\AentDockerCompose\Command;
 
-use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
 use TheAentMachine\EventCommand;
 use TheAentMachine\Hermes;
 
@@ -10,12 +9,12 @@ class AddEventCommand extends EventCommand
 {
     protected function getEventName(): string
     {
-        return EventEnum::ADD;
+        return 'ADD';
     }
 
     protected function executeEvent(?string $payload): ?string
     {
-        Hermes::dispatch(EventEnum::ASKING_FOR_DOCKER_SERVICE_INFO);
+        Hermes::dispatch('ASK_FOR_SERVICE');
         return null;
     }
 }

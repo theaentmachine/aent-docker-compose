@@ -4,7 +4,6 @@ namespace TheAentMachine\AentDockerCompose\Command;
 
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
-use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
 use TheAentMachine\EventCommand;
 
@@ -12,7 +11,7 @@ class RemoveEventCommand extends EventCommand
 {
     protected function getEventName(): string
     {
-        return EventEnum::REMOVE;
+        return 'REMOVE';
     }
 
     protected function executeEvent(?string $payload): ?string
@@ -44,8 +43,7 @@ class RemoveEventCommand extends EventCommand
                     unlink($file);
                 }
             }
-
-            return null;
         }
+        return null;
     }
 }
