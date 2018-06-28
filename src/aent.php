@@ -17,15 +17,15 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use TheAentMachine\AentApplication;
 use TheAentMachine\AentDockerCompose\Command\AddEventCommand;
-use TheAentMachine\AentDockerCompose\Command\DeleteDockerServiceEventCommand;
-use TheAentMachine\AentDockerCompose\Command\NewDockerServiceInfoEventCommand;
+use TheAentMachine\AentDockerCompose\Command\DeleteServiceEventCommand;
+use TheAentMachine\AentDockerCompose\Command\NewServiceEventCommand;
 use TheAentMachine\AentDockerCompose\Command\RemoveEventCommand;
 
 $application = new AentApplication();
 
 $application->add(new AddEventCommand());
 $application->add(new RemoveEventCommand());
-$application->add(new NewDockerServiceInfoEventCommand());
-$application->add(new DeleteDockerServiceEventCommand());
+$application->add(new NewServiceEventCommand());
+$application->add(new DeleteServiceEventCommand());
 
 $application->run();

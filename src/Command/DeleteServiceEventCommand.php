@@ -4,16 +4,15 @@ namespace TheAentMachine\AentDockerCompose\Command;
 
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Yaml\Yaml;
-use TheAentMachine\AentDockerCompose\Aenthill\Enum\EventEnum;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
 use TheAentMachine\AentDockerCompose\YamlTools\YamlTools;
 use TheAentMachine\JsonEventCommand;
 
-class DeleteDockerServiceEventCommand extends JsonEventCommand
+class DeleteServiceEventCommand extends JsonEventCommand
 {
     protected function getEventName(): string
     {
-        return EventEnum::DELETE_DOCKER_SERVICE;
+        return 'DELETE_SERVICE';
     }
 
     protected function executeJsonEvent(array $payload): ?array

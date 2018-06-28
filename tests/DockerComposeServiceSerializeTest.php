@@ -7,7 +7,7 @@ use Symfony\Component\Yaml\Yaml;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
 use TheAentMachine\Service\Service;
 
-class NewDockerServiceInfoTest extends TestCase
+class DockerComposeServiceSerializeTest extends TestCase
 {
     private const VALID_PAYLOAD = <<< 'JSON'
 {
