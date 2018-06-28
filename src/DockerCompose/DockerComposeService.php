@@ -3,10 +3,13 @@
 namespace TheAentMachine\AentDockerCompose\DockerCompose;
 
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Yaml\Yaml;
 use TheAentMachine\AentDockerCompose\Aenthill\Enum\PheromoneEnum;
 use TheAentMachine\AentDockerCompose\Aenthill\Exception\ContainerProjectDirEnvVariableEmptyException;
+use TheAentMachine\AentDockerCompose\YamlTools\YamlTools;
 use TheAentMachine\Service\Enum\VolumeTypeEnum;
 use TheAentMachine\Service\Environment\EnvVariable;
 use TheAentMachine\Service\Service;
@@ -166,5 +169,51 @@ class DockerComposeService
         $process->enableOutput();
         $process->setTty(true);
         $process->mustRun();
+    }
+
+
+    /**
+     * Merge some yaml content into a docker-compose file (and check its validity, by default)
+     * @param mixed[]|string $content
+     * @param string $file
+     * @param bool $checkValidity
+     */
+    public static function mergeContentInDockerComposeFile($content, string $file, bool $checkValidity = true): void
+    {
+        self::mergeContentInDockerComposeFiles($content, [$file], $checkValidity);
+    }
+
+    /**
+     * Merge some yaml content into multiple docker-compose files (and check their validity, by default)
+     * @param mixed[]|string $content
+     * @param array $files
+     * @param bool $checkValidity
+     */
+    public static function mergeContentInDockerComposeFiles($content, array $files, bool $checkValidity = true): void
+    {
+        $tmpFile = __DIR__ . '/tmp-merge-content-file.yml';
+        $tmpMergedFile = __DIR__ . '/tmp-merged-content-file.yml';
+
+        if (\is_array($content)) {
+            $content = Yaml::dump($content, 256, 2, Yaml::DUMP_OBJECT_AS_MAP);
+        }
+
+        $fileSystem = new Filesystem();
+        $fileSystem->dumpFile($tmpFile, $content);
+
+        foreach ($files as $file) {
+            if ($checkValidity) {
+                YamlTools::mergeSuccessive([$file, $tmpFile], $tmpMergedFile);
+                self::checkDockerComposeFileValidity($tmpMergedFile);
+                $fileSystem->copy($tmpMergedFile, $file);
+            } else {
+                YamlTools::mergeTwoFiles($file, $tmpFile);
+            }
+        }
+
+        $fileSystem->remove($tmpFile);
+        if ($checkValidity) {
+            $fileSystem->remove($tmpMergedFile);
+        }
     }
 }

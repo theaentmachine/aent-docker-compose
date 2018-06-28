@@ -2,20 +2,33 @@
 
 namespace TheAentMachine\AentDockerCompose\YamlTools;
 
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
 class YamlTools
 {
-    public const TMP_YAML_FILE = __DIR__ . '/tmp.yml';
-    public const TMP_MERGED_FILE = __DIR__ . '/tmp-merge.yml';
 
     /**
-     * Merge the content of $inputFile2 with $inputFile1's one, then write it into $outputFile (or stdout if empty)
+     * Merge the content of $sourceFile into $destinationFile's one (overwritten)
+     * @param string $destinationFile
+     * @param string $sourceFile
      */
-    public static function merge(string $inputFile1, string $inputFile2, string $outputFile = ''): void
+    public static function mergeTwoFiles(string $destinationFile, string $sourceFile): void
     {
-        $command = array('yaml-tools', 'merge', '-i', $inputFile1, $inputFile2);
-        if (!empty($outputFile)) {
+        $files = [$destinationFile, $sourceFile];
+        self::mergeSuccessive($files, $destinationFile);
+    }
+
+    /**
+     * Given an array of yaml file pathnames, merge them from the last to the first
+     * @param mixed[] $yamlFilePathnames
+     * @param null|string $outputFile if null, dump the result to stdout
+     */
+    public static function mergeSuccessive(array $yamlFilePathnames, ?string $outputFile = null): void
+    {
+        $command = array('yaml-tools', 'merge', '-i');
+        $command = array_merge($command, $yamlFilePathnames);
+        if (null !== $outputFile) {
             $command[] = '-o';
             $command[] = $outputFile;
         }
@@ -26,15 +39,33 @@ class YamlTools
     }
 
     /**
-     * Delete one element of the $inputFile (e.g. foo.bar[2].baz), then write it into $outputFile (or stdout if empty)
+     * Merge yaml content into one file
+     * @param string $content
+     * @param string $file
+     * @throws \Exception
      */
-    public static function delete(string $elemToDelete, string $inputFile, string $outputFile = ''): void
+    public static function mergeContentIntoFile(string $content, string $file): void
     {
-        $command = array('yaml-tools', 'delete', $elemToDelete, '-i', $inputFile);
-        if (!empty($outputFile)) {
-            $command[] = '-o';
-            $command[] = $outputFile;
-        }
+        $tmpFile = __DIR__ . '/tmp-yaml-tools-file.yml';
+        $fileSystem = new Filesystem();
+        $fileSystem->dumpFile($tmpFile, $content);
+        self::mergeTwoFiles($file, $tmpFile);
+        $fileSystem->remove($tmpFile);
+    }
+
+    /**
+     * Delete one yaml item given its path (e.g. key1 key2 0 key3) in the $inputFile, then write it into $outputFile (or stdout if empty)
+     * Caution : this also deletes its preceding comments
+     * @param string[] $pathToItem e.g. key1 key2 0 key3
+     * @param string $file
+     */
+    public static function deleteYamlItem(array $pathToItem, string $file): void
+    {
+        $command = array('yaml-tools', 'delete');
+        $command = array_merge($command, $pathToItem, [
+            '-i', $file,
+            '-o', $file,
+        ]);
         $process = new Process($command);
         $process->enableOutput();
         $process->setTty(true);

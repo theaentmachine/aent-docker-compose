@@ -16,7 +16,8 @@
     "symfony/process": "^4.1",
     "symfony/finder": "^4.1",
     "psr/log": "^1",
-    "theaentmachine/aent-console": "^1"
+    "theaentmachine/aent-console": "^1",
+    "symfony/filesystem": "^4.1"
   },
   "require-dev" : {
     "phpunit/phpunit": "^7",
