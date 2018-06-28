@@ -33,16 +33,13 @@ todo
 Payload format (JSON) :
 ```
 {
-  "serviceName" : "foo",                                        //required
-  "service": {                                                  //required
-    "image"         : "foo",
+  "serviceName" : "foo",                                        //required  
+  "service": {
+    "image"         : "foo/bar:baz",
+    "command"       : ["foo", "-bar", "-baz", "--qux"],
     "internalPorts" : [1, 2, 3],
     "dependsOn"     : ["foo", "bar"],
     "ports"         : [{"source": 80, "target": 8080}],
-    "labels"        : {
-                        "foo": {"value": "fooo"},
-                        "bar": {"value": "baar"}
-                      },
     "environment"   : {
                         "FOO": {
                           "value": "fooo",                      //required
@@ -50,6 +47,10 @@ Payload format (JSON) :
                         },
                         "BAR": {...}
                       },
+    "labels"        : {
+                        "foo": {"value": "fooo"},
+                        "bar": {"value": "baar"}
+                      },               
     "volumes"       : [
                         {
                           "type"      : "volume|bind|tmpfs",    //required
@@ -58,7 +59,12 @@ Payload format (JSON) :
                           "readOnly"  : true|false
                         }
                       ]
-  }
+  },
+  "dockerfileCommands": [
+      "FROM foo",
+      "COPY bar",
+      "RUN baz"
+  ]
 }
 ```
 It handles named volumes by adding them inside **volumes** (at root level) in docker-compose.json

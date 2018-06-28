@@ -38,7 +38,7 @@ RUN wget -q https://raw.githubusercontent.com/thecodingmachine/yaml-tools/$YAML_
     chmod +x /usr/bin/yaml-tools
 
 # Installs Hermes. You may find all available versions in the releases page: https://github.com/aenthill/hermes/releases/.
-ENV HERMES_VERSION "0.0.13"
+ENV HERMES_VERSION "0.0.14"
 RUN curl -sf https://raw.githubusercontent.com/aenthill/hermes/master/install.sh | BINDIR=/usr/bin sh -s $HERMES_VERSION
 
 # Copies our aent entry point.

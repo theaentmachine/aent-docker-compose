@@ -2,4 +2,4 @@
 
 set -e
 
-php /src/aent.php $@;
+php /src/aent.php "$@"
