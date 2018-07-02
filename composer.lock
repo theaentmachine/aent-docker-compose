@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "e21362c3b3fcffd972e1f3d995fadaf7",
+    "content-hash": "4e523e89a3e7e9322ba60bab1807e3e7",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -740,13 +740,13 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/theaentmachine/aent-console.git",
-                "reference": "fdda8666eddb352e4a77d0c9649aef36f55d28b0"
+                "url": "https://github.com/JinTotonic/aent-console.git",
+                "reference": "a09478793e9407b670bafce8c3fdd25712a3980f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/theaentmachine/aent-console/zipball/fdda8666eddb352e4a77d0c9649aef36f55d28b0",
-                "reference": "fdda8666eddb352e4a77d0c9649aef36f55d28b0",
+                "url": "https://api.github.com/repos/JinTotonic/aent-console/zipball/a09478793e9407b670bafce8c3fdd25712a3980f",
+                "reference": "a09478793e9407b670bafce8c3fdd25712a3980f",
                 "shasum": ""
             },
             "require": {
@@ -777,7 +777,30 @@
                     "TheAentMachine\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "TheAentMachine\\": "tests/"
+                }
+            },
+            "scripts": {
+                "ci": [
+                    "@cs-check",
+                    "@phpstan",
+                    "@phpunit"
+                ],
+                "cs-fix": [
+                    "phpcbf"
+                ],
+                "cs-check": [
+                    "phpcs"
+                ],
+                "phpstan": [
+                    "phpstan analyse src -c phpstan.neon --level=7 --no-progress -vvv"
+                ],
+                "phpunit": [
+                    "phpunit"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -800,7 +823,10 @@
             ],
             "description": "A utility PHP package to create Aents using Symfony console.",
             "homepage": "https://github.com/theaentmachine/aent-console",
-            "time": "2018-06-29T13:07:55+00:00"
+            "support": {
+                "source": "https://github.com/JinTotonic/aent-console/tree/master"
+            },
+            "time": "2018-07-02T08:30:26+00:00"
         }
     ],
     "packages-dev": [
