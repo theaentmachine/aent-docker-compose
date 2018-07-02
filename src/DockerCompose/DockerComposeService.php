@@ -3,10 +3,12 @@
 namespace TheAentMachine\AentDockerCompose\DockerCompose;
 
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
-use TheAentMachine\AentDockerCompose\Aenthill\Enum\PheromoneEnum;
-use TheAentMachine\AentDockerCompose\Aenthill\Exception\ContainerProjectDirEnvVariableEmptyException;
+use Symfony\Component\Yaml\Yaml;
+use TheAentMachine\AentDockerCompose\YamlTools\YamlTools;
+use TheAentMachine\Pheromone;
 use TheAentMachine\Service\Enum\VolumeTypeEnum;
 use TheAentMachine\Service\Environment\EnvVariable;
 use TheAentMachine\Service\Service;
@@ -30,15 +32,9 @@ class DockerComposeService
         $this->log = $log;
     }
 
-    /**
-     * @throws ContainerProjectDirEnvVariableEmptyException
-     */
     private function seekFiles(): void
     {
-        $containerProjectDir = getenv(PheromoneEnum::PHEROMONE_CONTAINER_PROJECT_DIR);
-        if (empty($containerProjectDir)) {
-            throw new ContainerProjectDirEnvVariableEmptyException();
-        }
+        $containerProjectDir = Pheromone::getContainerProjectDirectory();
 
         $finder = new Finder();
         $dockerComposeFileFilter = function (\SplFileInfo $file) {
@@ -57,14 +53,6 @@ class DockerComposeService
             $this->files[] = new DockerComposeFile($file);
             $this->log->info($file->getFilename() . ' has been found');
         }
-
-        /*if (count($this->files) === 1) {
-            $this->log->info($this->files[0]->getFilename() . ' has been found');
-            return;
-        }
-
-        throw new NotImplementedException("multiple docker-compose files handling is not yet implemented");
-        */
     }
 
     /**
@@ -82,9 +70,12 @@ class DockerComposeService
         return $pathnames;
     }
 
-    /**
-     * @param string $path
-     */
+    public function filesInitialized(): bool
+    {
+        return !(null === $this->files || empty($this->files));
+    }
+
+
     private function createDockerComposeFile(string $path): void
     {
         // TODO ask questions about version and so on!
@@ -166,5 +157,51 @@ class DockerComposeService
         $process->enableOutput();
         $process->setTty(true);
         $process->mustRun();
+    }
+
+
+    /**
+     * Merge some yaml content into a docker-compose file (and check its validity, by default)
+     * @param mixed[]|string $content
+     * @param string $file
+     * @param bool $checkValidity
+     */
+    public static function mergeContentInDockerComposeFile($content, string $file, bool $checkValidity = true): void
+    {
+        self::mergeContentInDockerComposeFiles($content, [$file], $checkValidity);
+    }
+
+    /**
+     * Merge some yaml content into multiple docker-compose files (and check their validity, by default)
+     * @param mixed[]|string $content
+     * @param array $files
+     * @param bool $checkValidity
+     */
+    public static function mergeContentInDockerComposeFiles($content, array $files, bool $checkValidity = true): void
+    {
+        $tmpFile = __DIR__ . '/tmp-merge-content-file.yml';
+        $tmpMergedFile = __DIR__ . '/tmp-merged-content-file.yml';
+
+        if (\is_array($content)) {
+            $content = Yaml::dump($content, 256, 2, Yaml::DUMP_OBJECT_AS_MAP);
+        }
+
+        $fileSystem = new Filesystem();
+        $fileSystem->dumpFile($tmpFile, $content);
+
+        foreach ($files as $file) {
+            if ($checkValidity) {
+                YamlTools::mergeSuccessive([$file, $tmpFile], $tmpMergedFile);
+                self::checkDockerComposeFileValidity($tmpMergedFile);
+                $fileSystem->copy($tmpMergedFile, $file);
+            } else {
+                YamlTools::mergeTwoFiles($file, $tmpFile);
+            }
+        }
+
+        $fileSystem->remove($tmpFile);
+        if ($checkValidity) {
+            $fileSystem->remove($tmpMergedFile);
+        }
     }
 }

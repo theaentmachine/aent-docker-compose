@@ -3,7 +3,6 @@
 namespace TheAentMachine\AentDockerCompose\Command;
 
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
 use TheAentMachine\EventCommand;
 
@@ -16,34 +15,36 @@ class RemoveEventCommand extends EventCommand
 
     protected function executeEvent(?string $payload): ?string
     {
-        $helper = $this->getHelper('question');
-        $question = new ConfirmationQuestion(
-            "Do you want to delete your docker-compose file(s) ? [y/N]\n > ",
-            false
-        );
-        $doDelete = $helper->ask($this->input, $this->output, $question);
+        $dockerComposeService = new DockerComposeService($this->log);
+        if ($dockerComposeService->filesInitialized()) {
+            $doDelete = $this->getAentHelper()
+                ->question('Do you want to delete your docker-compose file(s)?')
+                ->yesNoQuestion()
+                ->setDefault('n')
+                ->ask();
 
-        if ($doDelete) {
-            $dockerComposeService = new DockerComposeService($this->log);
-            $dockerComposeFilePathnames = $dockerComposeService->getDockerComposePathnames();
+            if ($doDelete) {
+                $dockerComposeFilePathnames = $dockerComposeService->getDockerComposePathnames();
 
-            $helper = $this->getHelper('question');
-            $question = new ChoiceQuestion(
-                'Please choose the docker-compose file(s) you want to delete (e.g. 0,1) : ',
-                $dockerComposeFilePathnames,
-                null
-            );
-            $question->setMultiselect(true);
+                $helper = $this->getHelper('question');
+                $question = new ChoiceQuestion(
+                    'Please choose the docker-compose file(s) you want to delete (e.g. 0,1,2) : ',
+                    $dockerComposeFilePathnames,
+                    null
+                );
+                $question->setMultiselect(true);
 
-            $toDelete = $helper->ask($this->input, $this->output, $question);
+                $toDelete = $helper->ask($this->input, $this->output, $question);
 
-            if (!empty($toDelete)) {
-                foreach ($toDelete as $file) {
-                    $this->log->info('Deleting ' . $file);
-                    unlink($file);
+                if (!empty($toDelete)) {
+                    foreach ($toDelete as $file) {
+                        $this->log->info('Deleting ' . $file);
+                        unlink($file);
+                    }
                 }
             }
         }
+
         return null;
     }
 }

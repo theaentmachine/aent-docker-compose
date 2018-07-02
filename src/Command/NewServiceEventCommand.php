@@ -24,35 +24,22 @@ class NewServiceEventCommand extends JsonEventCommand
 
         // $this->log->debug(json_encode($formattedPayload, JSON_PRETTY_PRINT));
 
-        $yml = Yaml::dump($formattedPayload, 256, 4, Yaml::DUMP_OBJECT_AS_MAP);
-        file_put_contents(YamlTools::TMP_YAML_FILE, $yml);
-
-
         $dockerComposeService = new DockerComposeService($this->log);
         $dockerComposeFilePathnames = $dockerComposeService->getDockerComposePathnames();
         if (count($dockerComposeFilePathnames) === 1) {
-            $toMerge = $dockerComposeFilePathnames;
+            $filesToMerge = $dockerComposeFilePathnames;
         } else {
             $helper = $this->getHelper('question');
             $question = new ChoiceQuestion(
-                'Please choose the docker-compose file(s) in which the service will be added (e.g. 0,1) : ',
-                $dockerComposeFilePathnames,
-                null
+                'Please choose the docker-compose file(s) in which the service will be added (e.g. 0,1,2) : ',
+                $dockerComposeFilePathnames
             );
             $question->setMultiselect(true);
 
-            $toMerge = $helper->ask($this->input, $this->output, $question);
+            $filesToMerge = $helper->ask($this->input, $this->output, $question);
         }
 
-        foreach ($toMerge as $file) {
-            YamlTools::merge($file, YamlTools::TMP_YAML_FILE, YamlTools::TMP_MERGED_FILE);
-            DockerComposeService::checkDockerComposeFileValidity(YamlTools::TMP_MERGED_FILE);
-            copy(YamlTools::TMP_MERGED_FILE, $file);
-        }
-
-        unlink(YamlTools::TMP_YAML_FILE);
-        unlink(YamlTools::TMP_MERGED_FILE);
-
+        DockerComposeService::mergeContentInDockerComposeFiles($formattedPayload, $filesToMerge, true);
         return null;
     }
 }
