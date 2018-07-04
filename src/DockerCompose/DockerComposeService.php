@@ -75,13 +75,15 @@ class DockerComposeService
         return !(null === $this->files || empty($this->files));
     }
 
-
     private function createDockerComposeFile(string $path): void
     {
         // TODO ask questions about version and so on!
-        file_put_contents($path, "version: '" . self::VERSION . "'");
-        chown($path, fileowner(\dirname($path)));
-        chgrp($path, filegroup(\dirname($path)));
+        $fileSystem = new Filesystem();
+        $fileSystem->dumpFile($path, "version: '" . self::VERSION . "'");
+
+        $dirInfo = new \SplFileInfo(\dirname($path));
+        chown($path, $dirInfo->getOwner());
+        chgrp($path, $dirInfo->getGroup());
 
         $file = new DockerComposeFile(new \SplFileInfo($path));
         $this->files[] = $file;
@@ -174,7 +176,7 @@ class DockerComposeService
     /**
      * Merge some yaml content into multiple docker-compose files (and check their validity, by default)
      * @param mixed[]|string $content
-     * @param array $files
+     * @param string[] $files
      * @param bool $checkValidity
      */
     public static function mergeContentInDockerComposeFiles($content, array $files, bool $checkValidity = true): void
@@ -193,7 +195,7 @@ class DockerComposeService
             if ($checkValidity) {
                 YamlTools::mergeSuccessive([$file, $tmpFile], $tmpMergedFile);
                 self::checkDockerComposeFileValidity($tmpMergedFile);
-                $fileSystem->copy($tmpMergedFile, $file);
+                $fileSystem->copy($tmpMergedFile, $file, true);
             } else {
                 YamlTools::mergeTwoFiles($file, $tmpFile);
             }

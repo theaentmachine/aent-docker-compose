@@ -3,10 +3,9 @@
 namespace TheAentMachine\AentDockerCompose\Command;
 
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\Yaml\Yaml;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
-use TheAentMachine\AentDockerCompose\YamlTools\YamlTools;
 use TheAentMachine\JsonEventCommand;
+use TheAentMachine\Pheromone;
 use TheAentMachine\Service\Service;
 
 class NewServiceEventCommand extends JsonEventCommand
@@ -22,7 +21,10 @@ class NewServiceEventCommand extends JsonEventCommand
         $service = Service::parsePayload($payload);
         $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service);
 
-        // $this->log->debug(json_encode($formattedPayload, JSON_PRETTY_PRINT));
+        if (Pheromone::getLogLevel() === 'DEBUG') {
+            $prettyPayload = json_encode($formattedPayload, JSON_PRETTY_PRINT);
+            $this->log->debug($prettyPayload === false ? 'incorrect formatted payload' : $prettyPayload);
+        }
 
         $dockerComposeService = new DockerComposeService($this->log);
         $dockerComposeFilePathnames = $dockerComposeService->getDockerComposePathnames();
