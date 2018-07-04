@@ -34,7 +34,7 @@ class DeleteServiceEventCommand extends JsonEventCommand
                     ->ask();
 
                 if ($doDelete) {
-                    $this->log->debug('deleting ' . $elemToDelete . ' in ' . $file);
+                    $this->log->debug('deleting ' . implode('->', $elemToDelete) . ' in ' . $file);
                     YamlTools::deleteYamlItem($elemToDelete, $file);
                 }
             }
@@ -50,7 +50,7 @@ class DeleteServiceEventCommand extends JsonEventCommand
                             ->ask();
 
                         if ($doDelete) {
-                            $this->log->debug('deleting ' . $elemToDelete . ' in ' . $file);
+                            $this->log->debug('deleting ' . implode('->', $elemToDelete) . ' in ' . $file);
                             YamlTools::deleteYamlItem($elemToDelete, $file);
                         }
                     }
