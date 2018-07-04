@@ -79,9 +79,10 @@ class DockerComposeService
     private function createDockerComposeFile(string $path): void
     {
         // TODO ask questions about version and so on!
-        file_put_contents($path, "version: '" . self::VERSION . "'");
-        chown($path, fileowner(\dirname($path)));
-        chgrp($path, filegroup(\dirname($path)));
+        $fileSystem = new Filesystem();
+        $fileSystem->dumpFile($path, "version: '" . self::VERSION . "'");
+        $fileSystem->chown($path, fileowner(\dirname($path)));
+        $fileSystem->chgrp($path, filegroup(\dirname($path)));
 
         $file = new DockerComposeFile(new \SplFileInfo($path));
         $this->files[] = $file;
@@ -193,7 +194,7 @@ class DockerComposeService
             if ($checkValidity) {
                 YamlTools::mergeSuccessive([$file, $tmpFile], $tmpMergedFile);
                 self::checkDockerComposeFileValidity($tmpMergedFile);
-                $fileSystem->copy($tmpMergedFile, $file);
+                $fileSystem->copy($tmpMergedFile, $file, true);
             } else {
                 YamlTools::mergeTwoFiles($file, $tmpFile);
             }
