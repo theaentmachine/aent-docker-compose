@@ -741,12 +741,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/theaentmachine/aent-console.git",
-                "reference": "a1068d7407774e850332cf6a9cabceb658a206be"
+                "reference": "7ec7287e55003f39019b230fb359176c262b7626"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/theaentmachine/aent-console/zipball/a1068d7407774e850332cf6a9cabceb658a206be",
-                "reference": "a1068d7407774e850332cf6a9cabceb658a206be",
+                "url": "https://api.github.com/repos/theaentmachine/aent-console/zipball/7ec7287e55003f39019b230fb359176c262b7626",
+                "reference": "7ec7287e55003f39019b230fb359176c262b7626",
                 "shasum": ""
             },
             "require": {
@@ -800,7 +800,7 @@
             ],
             "description": "A utility PHP package to create Aents using Symfony console.",
             "homepage": "https://github.com/theaentmachine/aent-console",
-            "time": "2018-07-09T12:14:37+00:00"
+            "time": "2018-07-09T15:55:09+00:00"
         }
     ],
     "packages-dev": [
