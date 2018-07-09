@@ -19,7 +19,7 @@ RUN apk add --no-cache \
 RUN pip install docker-compose
 
 # Installs yaml-tools. You may find all available versions in the releases page: https://github.com/thecodingmachine/yaml-tools/releases
-ENV YAML_TOOLS_VERSION "0.0.4"
+ENV YAML_TOOLS_VERSION "0.0.6"
 RUN wget -q https://raw.githubusercontent.com/thecodingmachine/yaml-tools/$YAML_TOOLS_VERSION/src/yaml_tools.py -O /usr/bin/yaml-tools &&\
     chmod +x /usr/bin/yaml-tools
 
