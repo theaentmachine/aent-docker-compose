@@ -42,12 +42,11 @@ class YamlTools
      * Merge yaml content into one file
      * @param string $content
      * @param string $file
-     * @throws \Exception
      */
     public static function mergeContentIntoFile(string $content, string $file): void
     {
-        $tmpFile = __DIR__ . '/tmp-yaml-tools-file.yml';
         $fileSystem = new Filesystem();
+        $tmpFile = $fileSystem->tempnam(sys_get_temp_dir(), 'yaml-tools-merge-');
         $fileSystem->dumpFile($tmpFile, $content);
         self::mergeTwoFiles($file, $tmpFile);
         $fileSystem->remove($tmpFile);
@@ -66,6 +65,24 @@ class YamlTools
             '-i', $file,
             '-o', $file,
         ]);
+        $process = new Process($command);
+        $process->enableOutput();
+        $process->setTty(true);
+        $process->mustRun();
+    }
+
+    /**
+     * See https://github.com/thecodingmachine/yaml-tools#normalize-docker-compose
+     * @param string $inputFile
+     * @param string|null $outputFile
+     */
+    public static function normalizeDockerCompose(string $inputFile, ?string $outputFile = null): void
+    {
+        $command = array('yaml-tools', 'normalize-docker-compose', '-i', $inputFile);
+        if (null !== $outputFile) {
+            $command[] = '-o';
+            $command[] = $outputFile;
+        }
         $process = new Process($command);
         $process->enableOutput();
         $process->setTty(true);

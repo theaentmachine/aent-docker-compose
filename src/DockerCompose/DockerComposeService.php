@@ -181,29 +181,36 @@ class DockerComposeService
      */
     public static function mergeContentInDockerComposeFiles($content, array $files, bool $checkValidity = true): void
     {
-        $tmpFile = __DIR__ . '/tmp-merge-content-file.yml';
-        $tmpMergedFile = __DIR__ . '/tmp-merged-content-file.yml';
-
         if (\is_array($content)) {
             $content = Yaml::dump($content, 256, 2, Yaml::DUMP_OBJECT_AS_MAP);
         }
 
-        $fileSystem = new Filesystem();
-        $fileSystem->dumpFile($tmpFile, $content);
-
-        foreach ($files as $file) {
-            if ($checkValidity) {
-                YamlTools::mergeSuccessive([$file, $tmpFile], $tmpMergedFile);
-                self::checkDockerComposeFileValidity($tmpMergedFile);
-                $fileSystem->copy($tmpMergedFile, $file, true);
-            } else {
-                YamlTools::mergeTwoFiles($file, $tmpFile);
-            }
-        }
-
-        $fileSystem->remove($tmpFile);
         if ($checkValidity) {
-            $fileSystem->remove($tmpMergedFile);
+            $fileSystem = new Filesystem();
+            $contentFile = $fileSystem->tempnam(sys_get_temp_dir(), 'docker-compose-content-');
+            $fileSystem->dumpFile($contentFile, $content);
+
+            $tmpFiles = [];
+            foreach ($files as $file) {
+                $tmpFile = $fileSystem->tempnam(sys_get_temp_dir(), 'docker-compose-tmp-');
+                YamlTools::normalizeDockerCompose($file, $tmpFile);
+                YamlTools::mergeTwoFiles($tmpFile, $contentFile);
+                YamlTools::normalizeDockerCompose($tmpFile, $tmpFile);
+                self::checkDockerComposeFileValidity($tmpFile);
+                $tmpFiles[$file] = $tmpFile;
+            }
+
+            foreach ($files as $file) {
+                $tmpFile = $tmpFiles[$file];
+                $fileSystem->copy($tmpFile, $file, true);
+            }
+
+            $fileSystem->remove($contentFile);
+            $fileSystem->remove($tmpFiles);
+        } else {
+            foreach ($files as $file) {
+                YamlTools::mergeContentIntoFile($content, $file);
+            }
         }
     }
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "5ab2b8d2c99920591171f4c2d585bc84",
+    "content-hash": "c434027b9ec9283bc6b17752f0c497bc",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -741,12 +741,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/theaentmachine/aent-console.git",
-                "reference": "a50ad63a1c8d3ebee68ecb1f4379334eb85447d6"
+                "reference": "a1068d7407774e850332cf6a9cabceb658a206be"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/theaentmachine/aent-console/zipball/a50ad63a1c8d3ebee68ecb1f4379334eb85447d6",
-                "reference": "a50ad63a1c8d3ebee68ecb1f4379334eb85447d6",
+                "url": "https://api.github.com/repos/theaentmachine/aent-console/zipball/a1068d7407774e850332cf6a9cabceb658a206be",
+                "reference": "a1068d7407774e850332cf6a9cabceb658a206be",
                 "shasum": ""
             },
             "require": {
@@ -764,7 +764,7 @@
                 "phpstan/phpstan": "^0.10.1",
                 "phpunit/phpunit": "^7",
                 "squizlabs/php_codesniffer": "^3.2",
-                "thecodingmachine/phpstan-strict-rules": "^0.10.1"
+                "thecodingmachine/phpstan-strict-rules": "^0.10.2"
             },
             "type": "library",
             "extra": {
@@ -800,7 +800,7 @@
             ],
             "description": "A utility PHP package to create Aents using Symfony console.",
             "homepage": "https://github.com/theaentmachine/aent-console",
-            "time": "2018-07-04T15:40:05+00:00"
+            "time": "2018-07-09T12:14:37+00:00"
         }
     ],
     "packages-dev": [
@@ -2958,16 +2958,16 @@
         },
         {
             "name": "thecodingmachine/phpstan-strict-rules",
-            "version": "v0.10.1",
+            "version": "v0.10.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thecodingmachine/phpstan-strict-rules.git",
-                "reference": "e0892ef023f85c2926b59e253891520196136157"
+                "reference": "4171d4426cd6289ae9231061aa0e39a09c6e3133"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thecodingmachine/phpstan-strict-rules/zipball/e0892ef023f85c2926b59e253891520196136157",
-                "reference": "e0892ef023f85c2926b59e253891520196136157",
+                "url": "https://api.github.com/repos/thecodingmachine/phpstan-strict-rules/zipball/4171d4426cd6289ae9231061aa0e39a09c6e3133",
+                "reference": "4171d4426cd6289ae9231061aa0e39a09c6e3133",
                 "shasum": ""
             },
             "require": {
@@ -3000,7 +3000,7 @@
                 }
             ],
             "description": "A set of additional rules for PHPStan based on best practices followed at TheCodingMachine",
-            "time": "2018-07-04T13:39:13+00:00"
+            "time": "2018-07-06T12:40:23+00:00"
         },
         {
             "name": "theseer/tokenizer",
