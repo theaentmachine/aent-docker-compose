@@ -7,19 +7,13 @@ RUN composer install --no-dev
 
 FROM theaentmachine/base-php-aent:0.0.14
 
-RUN apk add --no-cache \
-    python \
-    python-dev \
-    py-pip \
-    build-base &&\
-    pip install -U pip setuptools wheel &&\
-    pip install ruamel.yaml
-
-# Installs docker-compose
-RUN pip install docker-compose
+# Installs Python3, pip, ruamel.yaml and docker-compose.
+RUN apk add --no-cache python3 &&\
+    pip3 install --upgrade --no-cache-dir pip ruamel.yaml docker-compose
 
 # Installs yaml-tools. You may find all available versions in the releases page: https://github.com/thecodingmachine/yaml-tools/releases
-ENV YAML_TOOLS_VERSION "0.0.6"
+ENV YAML_TOOLS_VERSION "0.0.7"
+# RUN wget -q https://raw.githubusercontent.com/thecodingmachine/yaml-tools/$YAML_TOOLS_VERSION/src/yaml_tools.py -O /usr/bin/yaml-tools &&\
 RUN wget -q https://raw.githubusercontent.com/thecodingmachine/yaml-tools/$YAML_TOOLS_VERSION/src/yaml_tools.py -O /usr/bin/yaml-tools &&\
     chmod +x /usr/bin/yaml-tools
 
