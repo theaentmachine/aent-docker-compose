@@ -25,11 +25,12 @@ class DockerComposeService
     private $log;
 
     /** @var DockerComposeFile[] */
-    private $files;
+    private $files = [];
 
     public function __construct(LoggerInterface $log)
     {
         $this->log = $log;
+        $this->seekFiles();
     }
 
     private function seekFiles(): void
@@ -41,12 +42,6 @@ class DockerComposeService
             return $file->isFile() && preg_match('/^docker-compose(.)*\.(yaml|yml)$/', $file->getFilename());
         };
         $finder->files()->filter($dockerComposeFileFilter)->in($containerProjectDir)->depth('== 0');
-
-        if (!$finder->hasResults()) {
-            $this->log->info("no docker-compose file found, let's create it");
-            $this->createDockerComposeFile($containerProjectDir . '/docker-compose.yml');
-            return;
-        }
 
         /** @var \SplFileInfo $file */
         foreach ($finder as $file) {
@@ -60,8 +55,9 @@ class DockerComposeService
      */
     public function getDockerComposePathnames(): array
     {
-        if ($this->files === null) {
-            $this->seekFiles();
+        if (empty($this->files)) {
+            $this->log->info("no docker-compose file found, let's create it");
+            $this->createDockerComposeFile(Pheromone::getContainerProjectDirectory() . '/docker-compose.yml');
         }
         $pathnames = array();
         foreach ($this->files as $file) {
@@ -72,7 +68,7 @@ class DockerComposeService
 
     public function filesInitialized(): bool
     {
-        return !(null === $this->files || empty($this->files));
+        return !empty($this->files);
     }
 
     private function createDockerComposeFile(string $path): void
