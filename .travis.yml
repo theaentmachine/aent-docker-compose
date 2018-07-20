@@ -6,7 +6,7 @@ services:
   - docker
 
 before_install:
-  - wget -qO- https://github.com/gulien/orbit/releases/download/v3.1.0/orbit_Linux_x86_64.tar.gz | tar xvz -C .
+  - wget -qO- https://github.com/gulien/orbit/releases/download/v3.2.0/orbit_Linux_x86_64.tar.gz | tar xvz -C .
   - sudo mv ./orbit /usr/local/bin && chmod +x /usr/local/bin/orbit
 
 script:

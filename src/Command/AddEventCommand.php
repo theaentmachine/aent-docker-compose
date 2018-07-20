@@ -2,7 +2,8 @@
 
 namespace TheAentMachine\AentDockerCompose\Command;
 
-use TheAentMachine\EventCommand;
+use TheAentMachine\Aenthill\Metadata;
+use TheAentMachine\Command\EventCommand;
 
 class AddEventCommand extends EventCommand
 {
@@ -13,7 +14,14 @@ class AddEventCommand extends EventCommand
 
     protected function executeEvent(?string $payload): ?string
     {
-        // Hermes::dispatch('ASK_FOR_SERVICE');
+        $aentHelper = $this->getAentHelper();
+        $aentHelper->askForEnvName();
+        $envType = $aentHelper->askForEnvType();
+
+        if ($envType === Metadata::ENV_TYPE_TEST || $envType === Metadata::ENV_TYPE_PROD) {
+            $aentHelper->askForCICD();
+        }
+
         return null;
     }
 }

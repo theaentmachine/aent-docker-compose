@@ -4,7 +4,7 @@ namespace TheAentMachine\AentDockerCompose\Command;
 
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
-use TheAentMachine\EventCommand;
+use TheAentMachine\Command\EventCommand;
 
 class RemoveEventCommand extends EventCommand
 {
