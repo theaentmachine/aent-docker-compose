@@ -5,7 +5,7 @@ namespace TheAentMachine\AentDockerCompose\Command;
 use Symfony\Component\Yaml\Yaml;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
 use TheAentMachine\AentDockerCompose\YamlTools\YamlTools;
-use TheAentMachine\JsonEventCommand;
+use TheAentMachine\Command\JsonEventCommand;
 
 class DeleteServiceEventCommand extends JsonEventCommand
 {

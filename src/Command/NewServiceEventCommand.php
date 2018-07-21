@@ -4,8 +4,8 @@ namespace TheAentMachine\AentDockerCompose\Command;
 
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
-use TheAentMachine\JsonEventCommand;
-use TheAentMachine\Pheromone;
+use TheAentMachine\Command\JsonEventCommand;
+use TheAentMachine\Aenthill\Pheromone;
 use TheAentMachine\Service\Service;
 
 class NewServiceEventCommand extends JsonEventCommand

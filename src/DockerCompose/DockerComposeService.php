@@ -8,7 +8,7 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 use TheAentMachine\AentDockerCompose\YamlTools\YamlTools;
-use TheAentMachine\Pheromone;
+use TheAentMachine\Aenthill\Pheromone;
 use TheAentMachine\Service\Enum\VolumeTypeEnum;
 use TheAentMachine\Service\Environment\EnvVariable;
 use TheAentMachine\Service\Service;
