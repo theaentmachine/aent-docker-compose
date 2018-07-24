@@ -20,9 +20,11 @@ use TheAentMachine\AentDockerCompose\Command\AddEventCommand;
 use TheAentMachine\AentDockerCompose\Command\DeleteServiceEventCommand;
 use TheAentMachine\AentDockerCompose\Command\NewServiceEventCommand;
 use TheAentMachine\AentDockerCompose\Command\RemoveEventCommand;
+use \TheAentMachine\Command\EnvironmentEventCommand;
 
 $application = new AentApplication();
 
+$application->add(new EnvironmentEventCommand());
 $application->add(new AddEventCommand());
 $application->add(new RemoveEventCommand());
 $application->add(new NewServiceEventCommand());

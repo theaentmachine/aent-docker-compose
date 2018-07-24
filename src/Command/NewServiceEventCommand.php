@@ -2,10 +2,14 @@
 
 namespace TheAentMachine\AentDockerCompose\Command;
 
-use Symfony\Component\Console\Question\ChoiceQuestion;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
-use TheAentMachine\Command\JsonEventCommand;
+use TheAentMachine\Aenthill\Aenthill;
+use TheAentMachine\Aenthill\Manifest;
+use TheAentMachine\Aenthill\Metadata;
 use TheAentMachine\Aenthill\Pheromone;
+use TheAentMachine\Command\JsonEventCommand;
+use TheAentMachine\Exception\ManifestException;
+use TheAentMachine\Exception\MissingEnvironmentVariableException;
 use TheAentMachine\Service\Service;
 
 class NewServiceEventCommand extends JsonEventCommand
@@ -16,32 +20,78 @@ class NewServiceEventCommand extends JsonEventCommand
         return 'NEW_SERVICE';
     }
 
+    /**
+     * @param array $payload
+     * @return array|null
+     * @throws ManifestException
+     * @throws MissingEnvironmentVariableException
+     * @throws \TheAentMachine\Service\Exception\ServiceException
+     */
     protected function executeJsonEvent(array $payload): ?array
     {
+        $fileName = Manifest::getMetadata(Metadata::DOCKER_COMPOSE_FILENAME_KEY);
+        $this->getAentHelper()->title($fileName);
+
+        $service = Service::parsePayload($payload);
+        $serviceName = $service->getServiceName();
+        $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service);
+        $this->log->debug(\GuzzleHttp\json_encode($formattedPayload, JSON_PRETTY_PRINT));
+
+        // docker-compose
+        $dockerComposePath = Pheromone::getContainerProjectDirectory() . '/' . $fileName;
+        DockerComposeService::mergeContentInDockerComposeFile($formattedPayload, $dockerComposePath, true);
+
+        // Virtual Host
+        if ($service->getNeedVirtualHost()) {
+            $reverseProxyKey = Manifest::getDependencyOrNull(Metadata::REVERSE_PROXY_KEY);
+            if ($reverseProxyKey === null) {
+                $this->log->info('Adding aent-treafik (a reverse proxy service which can handles virtual hosts)');
+                Manifest::addDependency('theaentmachine/aent-traefik:snapshot', Metadata::REVERSE_PROXY_KEY, [
+                    Metadata::ENV_NAME_KEY => Manifest::getMetadata(Metadata::ENV_NAME_KEY),
+                    Metadata::ENV_TYPE_KEY => Manifest::getMetadata(Metadata::ENV_TYPE_KEY),
+                ]);
+                $this->addAentTraefik($dockerComposePath);
+            }
+            $this->newVirtualHost($dockerComposePath, $serviceName);
+        }
+        $this->output->writeln("Service <info>$serviceName</info> has been successfully added in <info>$fileName</info>!");
+        return null;
+    }
+
+    /**
+     * @throws ManifestException
+     * @throws MissingEnvironmentVariableException
+     * @throws \TheAentMachine\Service\Exception\ServiceException
+     */
+    private function addAentTraefik(string $dockerComposePath): void
+    {
+        $reverseProxyKey = Manifest::getDependency(Metadata::REVERSE_PROXY_KEY);
+        $repliedPayloads = Aenthill::runJson($reverseProxyKey, 'ADD', []);
+        $payload = \GuzzleHttp\json_decode($repliedPayloads[0], true);
         $service = Service::parsePayload($payload);
         $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service);
+        DockerComposeService::mergeContentInDockerComposeFile($formattedPayload, $dockerComposePath, true);
+    }
 
-        if (Pheromone::getLogLevel() === 'DEBUG') {
-            $prettyPayload = json_encode($formattedPayload, JSON_PRETTY_PRINT);
-            $this->log->debug($prettyPayload === false ? 'incorrect formatted payload' : $prettyPayload);
+    /**
+     * @throws ManifestException
+     * @throws MissingEnvironmentVariableException
+     * @throws \TheAentMachine\Service\Exception\ServiceException
+     */
+    private function newVirtualHost(string $dockerComposePath, string $serviceName, int $virtualPort = 80, string $virtualHost = null): void
+    {
+        $message = [
+            'service' => $serviceName,
+            'virtualPort' => $virtualPort
+        ];
+        if ($virtualHost !== null) {
+            $message['virtualHost'] = $virtualHost;
         }
-
-        $dockerComposeService = new DockerComposeService($this->log);
-        $dockerComposeFilePathnames = $dockerComposeService->getDockerComposePathnames();
-        if (count($dockerComposeFilePathnames) === 1) {
-            $filesToMerge = $dockerComposeFilePathnames;
-        } else {
-            $helper = $this->getHelper('question');
-            $question = new ChoiceQuestion(
-                'Please choose the docker-compose file(s) in which the service will be added (e.g. 0,1,2) : ',
-                $dockerComposeFilePathnames
-            );
-            $question->setMultiselect(true);
-
-            $filesToMerge = $helper->ask($this->input, $this->output, $question);
-        }
-
-        DockerComposeService::mergeContentInDockerComposeFiles($formattedPayload, $filesToMerge, true);
-        return null;
+        $reverseProxyKey = Manifest::getDependency(Metadata::REVERSE_PROXY_KEY);
+        $repliedPayloads = Aenthill::runJson($reverseProxyKey, 'NEW_VIRTUAL_HOST', $message);
+        $payload = \GuzzleHttp\json_decode($repliedPayloads[0], true);
+        $service = Service::parsePayload($payload);
+        $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service);
+        DockerComposeService::mergeContentInDockerComposeFile($formattedPayload, $dockerComposePath, true);
     }
 }
