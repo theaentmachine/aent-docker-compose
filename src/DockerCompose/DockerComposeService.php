@@ -7,7 +7,6 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
-use TheAentMachine\AentDockerCompose\YamlTools\YamlTools;
 use TheAentMachine\Aenthill\Pheromone;
 use TheAentMachine\Service\Enum\VolumeTypeEnum;
 use TheAentMachine\Service\Environment\EnvVariable;
@@ -16,6 +15,7 @@ use TheAentMachine\Service\Volume\BindVolume;
 use TheAentMachine\Service\Volume\NamedVolume;
 use TheAentMachine\Service\Volume\TmpfsVolume;
 use TheAentMachine\Service\Volume\Volume;
+use TheAentMachine\YamlTools\YamlTools;
 
 class DockerComposeService
 {
