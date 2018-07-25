@@ -10,6 +10,7 @@ use TheAentMachine\Aenthill\Pheromone;
 use TheAentMachine\Command\JsonEventCommand;
 use TheAentMachine\Exception\ManifestException;
 use TheAentMachine\Exception\MissingEnvironmentVariableException;
+use \TheAentMachine\Service\Exception\ServiceException;
 use TheAentMachine\Service\Service;
 
 class NewServiceEventCommand extends JsonEventCommand
@@ -25,14 +26,18 @@ class NewServiceEventCommand extends JsonEventCommand
      * @return array|null
      * @throws ManifestException
      * @throws MissingEnvironmentVariableException
-     * @throws \TheAentMachine\Service\Exception\ServiceException
+     * @throws ServiceException
      */
     protected function executeJsonEvent(array $payload): ?array
     {
+        $service = Service::parsePayload($payload);
+        if (!$service->isForMyEnvType()) {
+            return null;
+        }
+
         $fileName = Manifest::getMetadata(Metadata::DOCKER_COMPOSE_FILENAME_KEY);
         $this->getAentHelper()->title($fileName);
 
-        $service = Service::parsePayload($payload);
         $serviceName = $service->getServiceName();
         $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service);
         $this->log->debug(\GuzzleHttp\json_encode($formattedPayload, JSON_PRETTY_PRINT));
@@ -60,8 +65,7 @@ class NewServiceEventCommand extends JsonEventCommand
 
     /**
      * @throws ManifestException
-     * @throws MissingEnvironmentVariableException
-     * @throws \TheAentMachine\Service\Exception\ServiceException
+     * @throws ServiceException
      */
     private function addAentTraefik(string $dockerComposePath): void
     {
@@ -75,8 +79,7 @@ class NewServiceEventCommand extends JsonEventCommand
 
     /**
      * @throws ManifestException
-     * @throws MissingEnvironmentVariableException
-     * @throws \TheAentMachine\Service\Exception\ServiceException
+     * @throws ServiceException
      */
     private function newVirtualHost(string $dockerComposePath, string $serviceName, int $virtualPort = 80, string $virtualHost = null): void
     {
