@@ -5,7 +5,7 @@ COPY composer.lock composer.lock
 
 RUN composer install --no-dev
 
-FROM theaentmachine/base-php-aent:0.0.15
+FROM theaentmachine/base-php-aent:0.0.17
 
 # Installs Python3, pip, ruamel.yaml and docker-compose.
 RUN apk add --no-cache python3 &&\

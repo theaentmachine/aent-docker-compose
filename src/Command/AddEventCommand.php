@@ -16,7 +16,6 @@ class AddEventCommand extends EventCommand
     }
 
     /**
-     * @throws \TheAentMachine\Exception\ManifestException
      * @throws \TheAentMachine\Exception\MissingEnvironmentVariableException
      */
     protected function executeEvent(?string $payload): ?string
