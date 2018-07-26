@@ -60,7 +60,6 @@ class NewServiceEventCommand extends JsonEventCommand
 
     /**
      * @throws ManifestException
-     * @throws MissingEnvironmentVariableException
      * @throws \TheAentMachine\Service\Exception\ServiceException
      */
     private function addAentTraefik(string $dockerComposePath): void
@@ -71,11 +70,14 @@ class NewServiceEventCommand extends JsonEventCommand
         $service = Service::parsePayload($payload);
         $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service);
         DockerComposeService::mergeContentInDockerComposeFile($formattedPayload, $dockerComposePath, true);
+
+        $serviceName = $service->getServiceName();
+        $fileName = Manifest::getMetadata(Metadata::DOCKER_COMPOSE_FILENAME_KEY);
+        $this->output->writeln("Reverse proxy <info>$serviceName</info> has been successfully added in <info>$fileName</info>!");
     }
 
     /**
      * @throws ManifestException
-     * @throws MissingEnvironmentVariableException
      * @throws \TheAentMachine\Service\Exception\ServiceException
      */
     private function newVirtualHost(string $dockerComposePath, string $serviceName, int $virtualPort = 80, string $virtualHost = null): void
@@ -93,5 +95,9 @@ class NewServiceEventCommand extends JsonEventCommand
         $service = Service::parsePayload($payload);
         $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service);
         DockerComposeService::mergeContentInDockerComposeFile($formattedPayload, $dockerComposePath, true);
+
+        $serviceName = $service->getServiceName();
+        $fileName = Manifest::getMetadata(Metadata::DOCKER_COMPOSE_FILENAME_KEY);
+        $this->output->writeln("A new virtual host has been successfully added for <info>$serviceName</info> in <info>$fileName</info>!");
     }
 }
