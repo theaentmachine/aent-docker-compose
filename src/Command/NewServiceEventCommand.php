@@ -10,7 +10,6 @@ use TheAentMachine\Aenthill\Pheromone;
 use TheAentMachine\Command\JsonEventCommand;
 use TheAentMachine\Exception\ManifestException;
 use TheAentMachine\Exception\MissingEnvironmentVariableException;
-use \TheAentMachine\Service\Exception\ServiceException;
 use TheAentMachine\Service\Service;
 
 class NewServiceEventCommand extends JsonEventCommand
@@ -26,7 +25,7 @@ class NewServiceEventCommand extends JsonEventCommand
      * @return array|null
      * @throws ManifestException
      * @throws MissingEnvironmentVariableException
-     * @throws ServiceException
+     * @throws \TheAentMachine\Service\Exception\ServiceException
      */
     protected function executeJsonEvent(array $payload): ?array
     {
@@ -65,7 +64,7 @@ class NewServiceEventCommand extends JsonEventCommand
 
     /**
      * @throws ManifestException
-     * @throws ServiceException
+     * @throws \TheAentMachine\Service\Exception\ServiceException
      */
     private function addAentTraefik(string $dockerComposePath): void
     {
@@ -75,11 +74,15 @@ class NewServiceEventCommand extends JsonEventCommand
         $service = Service::parsePayload($payload);
         $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service);
         DockerComposeService::mergeContentInDockerComposeFile($formattedPayload, $dockerComposePath, true);
+
+        $serviceName = $service->getServiceName();
+        $fileName = Manifest::getMetadata(Metadata::DOCKER_COMPOSE_FILENAME_KEY);
+        $this->output->writeln("Reverse proxy <info>$serviceName</info> has been successfully added in <info>$fileName</info>!");
     }
 
     /**
      * @throws ManifestException
-     * @throws ServiceException
+     * @throws \TheAentMachine\Service\Exception\ServiceException
      */
     private function newVirtualHost(string $dockerComposePath, string $serviceName, int $virtualPort = 80, string $virtualHost = null): void
     {
@@ -96,5 +99,9 @@ class NewServiceEventCommand extends JsonEventCommand
         $service = Service::parsePayload($payload);
         $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service);
         DockerComposeService::mergeContentInDockerComposeFile($formattedPayload, $dockerComposePath, true);
+
+        $serviceName = $service->getServiceName();
+        $fileName = Manifest::getMetadata(Metadata::DOCKER_COMPOSE_FILENAME_KEY);
+        $this->output->writeln("A new virtual host has been successfully added for <info>$serviceName</info> in <info>$fileName</info>!");
     }
 }
