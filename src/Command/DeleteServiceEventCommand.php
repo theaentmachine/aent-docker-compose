@@ -20,7 +20,7 @@ class DeleteServiceEventCommand extends JsonEventCommand
      */
     protected function executeJsonEvent(array $payload): ?array
     {
-        $this->log->debug(json_encode($payload, JSON_PRETTY_PRINT));
+        $this->log->debug(\GuzzleHttp\json_encode($payload, JSON_PRETTY_PRINT));
         $dockerComposeFilename = Manifest::getMetadata(Metadata::DOCKER_COMPOSE_FILENAME_KEY);
         $this->getAentHelper()->title($dockerComposeFilename);
 

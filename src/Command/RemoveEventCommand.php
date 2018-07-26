@@ -2,8 +2,9 @@
 
 namespace TheAentMachine\AentDockerCompose\Command;
 
-use Symfony\Component\Console\Question\ChoiceQuestion;
-use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
+use TheAentMachine\Aenthill\Manifest;
+use TheAentMachine\Aenthill\Metadata;
+use TheAentMachine\Aenthill\Pheromone;
 use TheAentMachine\Command\EventCommand;
 
 class RemoveEventCommand extends EventCommand
@@ -13,38 +14,26 @@ class RemoveEventCommand extends EventCommand
         return 'REMOVE';
     }
 
+    /**
+     * @throws \TheAentMachine\Exception\MissingEnvironmentVariableException
+     * @throws \TheAentMachine\Exception\ManifestException
+     */
     protected function executeEvent(?string $payload): ?string
     {
-        $dockerComposeService = new DockerComposeService($this->log);
-        if ($dockerComposeService->filesInitialized()) {
-            $doDelete = $this->getAentHelper()
-                ->question('Do you want to delete your docker-compose file(s)?')
-                ->yesNoQuestion()
-                ->setDefault('n')
-                ->ask();
+        $dockerComposeFilename = Manifest::getMetadata(Metadata::DOCKER_COMPOSE_FILENAME_KEY);
+        $this->getAentHelper()->title($dockerComposeFilename);
 
-            if ($doDelete) {
-                $dockerComposeFilePathnames = $dockerComposeService->getDockerComposePathnames();
+        $doDelete = $this->getAentHelper()
+            ->question("Do you want to delete $dockerComposeFilename?")
+            ->yesNoQuestion()
+            ->setDefault('n')
+            ->ask();
 
-                $helper = $this->getHelper('question');
-                $question = new ChoiceQuestion(
-                    'Please choose the docker-compose file(s) you want to delete (e.g. 0,1,2) : ',
-                    $dockerComposeFilePathnames,
-                    null
-                );
-                $question->setMultiselect(true);
-
-                $toDelete = $helper->ask($this->input, $this->output, $question);
-
-                if (!empty($toDelete)) {
-                    foreach ($toDelete as $file) {
-                        $this->log->info('Deleting ' . $file);
-                        unlink($file);
-                    }
-                }
-            }
+        if ($doDelete) {
+            $this->log->debug("Deleting $dockerComposeFilename");
+            unlink(Pheromone::getContainerProjectDirectory() . "/$dockerComposeFilename");
         }
-
         return null;
     }
+
 }
