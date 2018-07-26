@@ -58,12 +58,16 @@ Payload format (JSON) :
                           "target"    : "bar",
                           "readOnly"  : true|false
                         }
-                      ]
+                      ],
+    "needVirtualHost": true|false
   },
   "dockerfileCommands": [
       "FROM foo",
       "COPY bar",
       "RUN baz"
+  ],
+  "destEnvTypes": [
+    "DEV|TEST|PROD"
   ]
 }
 ```
