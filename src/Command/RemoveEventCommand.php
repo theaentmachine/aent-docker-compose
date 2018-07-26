@@ -3,11 +3,11 @@
 namespace TheAentMachine\AentDockerCompose\Command;
 
 use TheAentMachine\Aenthill\Manifest;
-use TheAentMachine\Aenthill\Metadata;
+use TheAentMachine\Aenthill\CommonMetadata;
 use TheAentMachine\Aenthill\Pheromone;
-use TheAentMachine\Command\EventCommand;
+use TheAentMachine\Command\AbstractEventCommand;
 
-class RemoveEventCommand extends EventCommand
+class RemoveEventCommand extends AbstractEventCommand
 {
     protected function getEventName(): string
     {
@@ -20,7 +20,7 @@ class RemoveEventCommand extends EventCommand
      */
     protected function executeEvent(?string $payload): ?string
     {
-        $dockerComposeFilename = Manifest::getMetadata(Metadata::DOCKER_COMPOSE_FILENAME_KEY);
+        $dockerComposeFilename = Manifest::mustGetMetadata(CommonMetadata::DOCKER_COMPOSE_FILENAME_KEY);
         $this->getAentHelper()->title($dockerComposeFilename);
 
         $doDelete = $this->getAentHelper()
