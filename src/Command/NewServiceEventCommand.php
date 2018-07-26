@@ -29,10 +29,14 @@ class NewServiceEventCommand extends JsonEventCommand
      */
     protected function executeJsonEvent(array $payload): ?array
     {
+        $service = Service::parsePayload($payload);
+        if (!$service->isForMyEnvType()) {
+            return null;
+        }
+
         $fileName = Manifest::getMetadata(Metadata::DOCKER_COMPOSE_FILENAME_KEY);
         $this->getAentHelper()->title($fileName);
 
-        $service = Service::parsePayload($payload);
         $serviceName = $service->getServiceName();
         $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service);
         $this->log->debug(\GuzzleHttp\json_encode($formattedPayload, JSON_PRETTY_PRINT));
