@@ -4,11 +4,11 @@ namespace TheAentMachine\AentDockerCompose\Command;
 
 use Symfony\Component\Yaml\Yaml;
 use TheAentMachine\Aenthill\Manifest;
-use TheAentMachine\Aenthill\Metadata;
-use TheAentMachine\Command\JsonEventCommand;
+use TheAentMachine\Aenthill\CommonMetadata;
+use TheAentMachine\Command\AbstractJsonEventCommand;
 use TheAentMachine\YamlTools\YamlTools;
 
-class DeleteServiceEventCommand extends JsonEventCommand
+class DeleteServiceEventCommand extends AbstractJsonEventCommand
 {
     protected function getEventName(): string
     {
@@ -21,7 +21,7 @@ class DeleteServiceEventCommand extends JsonEventCommand
     protected function executeJsonEvent(array $payload): ?array
     {
         $this->log->debug(\GuzzleHttp\json_encode($payload, JSON_PRETTY_PRINT));
-        $dockerComposeFilename = Manifest::getMetadata(Metadata::DOCKER_COMPOSE_FILENAME_KEY);
+        $dockerComposeFilename = Manifest::mustGetMetadata(CommonMetadata::DOCKER_COMPOSE_FILENAME_KEY);
         $this->getAentHelper()->title($dockerComposeFilename);
 
         $ymlData = Yaml::parseFile($dockerComposeFilename);

@@ -3,31 +3,34 @@
 namespace TheAentMachine\AentDockerCompose\Command;
 
 use Symfony\Component\Filesystem\Filesystem;
+use TheAentMachine\Aenthill\CommonEvents;
 use TheAentMachine\Aenthill\Manifest;
-use TheAentMachine\Aenthill\Metadata;
+use TheAentMachine\Aenthill\CommonMetadata;
 use TheAentMachine\Aenthill\Pheromone;
-use TheAentMachine\Command\EventCommand;
+use TheAentMachine\Command\AbstractEventCommand;
 
-class AddEventCommand extends EventCommand
+class AddEventCommand extends AbstractEventCommand
 {
     protected function getEventName(): string
     {
-        return 'ADD';
+        return CommonEvents::ADD_EVENT;
     }
 
     /**
+     * @param null|string $payload
+     * @return null|string
+     * @throws \TheAentMachine\Exception\CommonAentsException
+     * @throws \TheAentMachine\Exception\ManifestException
      * @throws \TheAentMachine\Exception\MissingEnvironmentVariableException
      */
     protected function executeEvent(?string $payload): ?string
     {
         $aentHelper = $this->getAentHelper();
         $aentHelper->title('Installing a Docker Compose orchestrator');
-        $envType = $aentHelper->askForEnvType();
-        $envName = $aentHelper->askForEnvName($envType);
+        $envType = $aentHelper->getCommonQuestions()->askForEnvType();
+        $envName = $aentHelper->getCommonQuestions()->askForEnvName($envType);
 
-        if ($envType === Metadata::ENV_TYPE_TEST || $envType === Metadata::ENV_TYPE_PROD) {
-            // $aentHelper->askForCICD();
-        }
+        $aentHelper->getCommonQuestions()->askForCI();
 
         $projectDir = Pheromone::getContainerProjectDirectory();
         $fileNameChoices= [];
@@ -58,7 +61,7 @@ class AddEventCommand extends EventCommand
         $dirInfo = new \SplFileInfo(\dirname($dockerComposePath));
         chown($dockerComposePath, $dirInfo->getOwner());
         chgrp($dockerComposePath, $dirInfo->getGroup());
-        Manifest::addMetadata(Metadata::DOCKER_COMPOSE_FILENAME_KEY, $fileName);
+        Manifest::addMetadata(CommonMetadata::DOCKER_COMPOSE_FILENAME_KEY, $fileName);
 
         $this->output->writeln("Docker Compose file <info>$fileName</info> has been successfully created!");
 
