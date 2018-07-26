@@ -35,5 +35,4 @@ class RemoveEventCommand extends EventCommand
         }
         return null;
     }
-
 }
