@@ -2,12 +2,9 @@
 
 namespace TheAentMachine\AentDockerCompose\DockerCompose;
 
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
-use TheAentMachine\Aenthill\Pheromone;
 use TheAentMachine\Service\Enum\VolumeTypeEnum;
 use TheAentMachine\Service\Environment\EnvVariable;
 use TheAentMachine\Service\Service;
@@ -20,71 +17,6 @@ use TheAentMachine\YamlTools\YamlTools;
 class DockerComposeService
 {
     public const VERSION = '3.3';
-
-    /** @var LoggerInterface */
-    private $log;
-
-    /** @var DockerComposeFile[] */
-    private $files = [];
-
-    public function __construct(LoggerInterface $log)
-    {
-        $this->log = $log;
-        $this->seekFiles();
-    }
-
-    private function seekFiles(): void
-    {
-        $containerProjectDir = Pheromone::getContainerProjectDirectory();
-
-        $finder = new Finder();
-        $dockerComposeFileFilter = function (\SplFileInfo $file) {
-            return $file->isFile() && preg_match('/^docker-compose(.)*\.(yaml|yml)$/', $file->getFilename());
-        };
-        $finder->files()->filter($dockerComposeFileFilter)->in($containerProjectDir)->depth('== 0');
-
-        /** @var \SplFileInfo $file */
-        foreach ($finder as $file) {
-            $this->files[] = new DockerComposeFile($file);
-            $this->log->info($file->getFilename() . ' has been found');
-        }
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getDockerComposePathnames(): array
-    {
-        if (empty($this->files)) {
-            $this->log->info("no docker-compose file found, let's create it");
-            $this->createDockerComposeFile(Pheromone::getContainerProjectDirectory() . '/docker-compose.yml');
-        }
-        $pathnames = array();
-        foreach ($this->files as $file) {
-            $pathnames[] = $file->getPathname();
-        }
-        return $pathnames;
-    }
-
-    public function filesInitialized(): bool
-    {
-        return !empty($this->files);
-    }
-
-    private function createDockerComposeFile(string $path): void
-    {
-        // TODO ask questions about version and so on!
-        $fileSystem = new Filesystem();
-        $fileSystem->dumpFile($path, "version: '" . self::VERSION . "'");
-
-        $dirInfo = new \SplFileInfo(\dirname($path));
-        chown($path, $dirInfo->getOwner());
-        chgrp($path, $dirInfo->getGroup());
-
-        $file = new DockerComposeFile(new \SplFileInfo($path));
-        $this->files[] = $file;
-        $this->log->info($file->getFilename() . ' was successfully created!');
-    }
 
     /**
      * @param Service $service
