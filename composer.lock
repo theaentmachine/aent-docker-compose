@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "433c535e6dff60308bb22fba70625ad1",
+    "content-hash": "8d7f09220cf4ad58b28ec5dfb4b11ce3",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -741,12 +741,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/theaentmachine/aent-console.git",
-                "reference": "6447b11fb0d7da1842882d6e0269a295a790adca"
+                "reference": "dd2202e36d45d752660da1ebd6969b93aa54ae87"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/theaentmachine/aent-console/zipball/6447b11fb0d7da1842882d6e0269a295a790adca",
-                "reference": "6447b11fb0d7da1842882d6e0269a295a790adca",
+                "url": "https://api.github.com/repos/theaentmachine/aent-console/zipball/dd2202e36d45d752660da1ebd6969b93aa54ae87",
+                "reference": "dd2202e36d45d752660da1ebd6969b93aa54ae87",
                 "shasum": ""
             },
             "require": {
@@ -800,7 +800,7 @@
             ],
             "description": "A utility PHP package to create aents using Symfony console.",
             "homepage": "https://github.com/theaentmachine/aent-console",
-            "time": "2018-07-27T13:23:51+00:00"
+            "time": "2018-07-30T12:11:49+00:00"
         }
     ],
     "packages-dev": [

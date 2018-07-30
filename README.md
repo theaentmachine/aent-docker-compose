@@ -56,7 +56,9 @@ Payload format (JSON) :
                           "readOnly"  : true|false
                         }
                       ],
-    "needVirtualHost": true|false
+    "needVirtualHost": true|false,
+    "needBuild": true|false,
+    "needDeploy": true|false,
   },
   "dockerfileCommands": [
       "FROM foo",

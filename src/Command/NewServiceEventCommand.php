@@ -56,6 +56,7 @@ class NewServiceEventCommand extends AbstractJsonEventCommand
             $this->newVirtualHost($dockerComposePath, $serviceName);
         }
         $this->output->writeln("Service <info>$serviceName</info> has been successfully added in <info>$fileName</info>!");
+
         return null;
     }
 
