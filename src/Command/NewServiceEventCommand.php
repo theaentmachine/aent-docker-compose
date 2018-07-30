@@ -5,6 +5,7 @@ namespace TheAentMachine\AentDockerCompose\Command;
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
 use TheAentMachine\Aenthill\Aenthill;
 use TheAentMachine\Aenthill\CommonDependencies;
+use TheAentMachine\Aenthill\CommonEvents;
 use TheAentMachine\Aenthill\CommonMetadata;
 use TheAentMachine\Aenthill\Manifest;
 use TheAentMachine\Aenthill\Pheromone;
@@ -26,6 +27,7 @@ class NewServiceEventCommand extends AbstractJsonEventCommand
      * @throws ManifestException
      * @throws MissingEnvironmentVariableException
      * @throws \TheAentMachine\Service\Exception\ServiceException
+     * @throws \TheAentMachine\Exception\CommonAentsException
      */
     protected function executeJsonEvent(array $payload): ?array
     {
@@ -48,12 +50,8 @@ class NewServiceEventCommand extends AbstractJsonEventCommand
         // Virtual Host
         if ($service->getNeedVirtualHost()) {
             if (null === Manifest::getDependency(CommonDependencies::REVERSE_PROXY_KEY)) {
-                $this->log->info('Adding aent-treafik (a reverse proxy service which can handles virtual hosts)');
-                Manifest::addDependency('theaentmachine/aent-traefik:snapshot', CommonDependencies::REVERSE_PROXY_KEY, [
-                    CommonMetadata::ENV_NAME_KEY => Manifest::mustGetMetadata(CommonMetadata::ENV_NAME_KEY),
-                    CommonMetadata::ENV_TYPE_KEY => Manifest::mustGetMetadata(CommonMetadata::ENV_TYPE_KEY),
-                ]);
-                $this->addAentTraefik($dockerComposePath);
+                $this->getAentHelper()->getCommonQuestions()->askForReverseProxy();
+                $this->runAddReverseProxy($dockerComposePath);
             }
             $this->newVirtualHost($dockerComposePath, $serviceName);
         }
@@ -65,10 +63,10 @@ class NewServiceEventCommand extends AbstractJsonEventCommand
      * @throws ManifestException
      * @throws \TheAentMachine\Service\Exception\ServiceException
      */
-    private function addAentTraefik(string $dockerComposePath): void
+    private function runAddReverseProxy(string $dockerComposePath): void
     {
         $reverseProxyKey = Manifest::mustGetDependency(CommonDependencies::REVERSE_PROXY_KEY);
-        $repliedPayloads = Aenthill::runJson($reverseProxyKey, 'ADD', []);
+        $repliedPayloads = Aenthill::runJson($reverseProxyKey, CommonEvents::ADD_EVENT, []);
         $payload = \GuzzleHttp\json_decode($repliedPayloads[0], true);
         $service = Service::parsePayload($payload);
         $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service);
@@ -93,7 +91,7 @@ class NewServiceEventCommand extends AbstractJsonEventCommand
             $message['virtualHost'] = $virtualHost;
         }
         $reverseProxyKey = Manifest::mustGetDependency(CommonDependencies::REVERSE_PROXY_KEY);
-        $repliedPayloads = Aenthill::runJson($reverseProxyKey, 'NEW_VIRTUAL_HOST', $message);
+        $repliedPayloads = Aenthill::runJson($reverseProxyKey, CommonEvents::NEW_VIRTUAL_HOST_EVENT, $message);
         $payload = \GuzzleHttp\json_decode($repliedPayloads[0], true);
         $service = Service::parsePayload($payload);
         $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service);
