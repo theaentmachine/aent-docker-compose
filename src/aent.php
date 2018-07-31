@@ -26,7 +26,6 @@ $application = new AentApplication();
 
 $application->add(new EnvironmentEventCommand());
 $application->add(new AddEventCommand());
-$application->add(new RemoveEventCommand());
 $application->add(new NewServiceEventCommand());
 
 $application->run();
