@@ -19,6 +19,8 @@ class AddEventCommand extends AbstractEventCommand
     /**
      * @param null|string $payload
      * @return null|string
+     * @throws \TheAentMachine\Exception\CommonAentsException
+     * @throws \TheAentMachine\Exception\ManifestException
      * @throws \TheAentMachine\Exception\MissingEnvironmentVariableException
      */
     protected function executeEvent(?string $payload): ?string
