@@ -5,8 +5,8 @@ namespace TheAentMachine\AentDockerCompose\Command;
 use Symfony\Component\Filesystem\Filesystem;
 use TheAentMachine\Aenthill\Aenthill;
 use TheAentMachine\Aenthill\CommonEvents;
-use TheAentMachine\Aenthill\Manifest;
 use TheAentMachine\Aenthill\CommonMetadata;
+use TheAentMachine\Aenthill\Manifest;
 use TheAentMachine\Aenthill\Pheromone;
 use TheAentMachine\Command\AbstractEventCommand;
 
@@ -32,7 +32,7 @@ class AddEventCommand extends AbstractEventCommand
         $envName = $aentHelper->getCommonQuestions()->askForEnvName($envType);
 
         $projectDir = Pheromone::getContainerProjectDirectory();
-        $fileNameChoices= [];
+        $fileNameChoices = [];
         if (!file_exists("$projectDir/docker-compose.yml")) {
             $fileNameChoices[] = 'docker-compose.yml';
         }
