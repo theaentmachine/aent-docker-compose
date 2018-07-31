@@ -28,6 +28,5 @@ $application->add(new EnvironmentEventCommand());
 $application->add(new AddEventCommand());
 $application->add(new RemoveEventCommand());
 $application->add(new NewServiceEventCommand());
-$application->add(new DeleteServiceEventCommand());
 
 $application->run();
