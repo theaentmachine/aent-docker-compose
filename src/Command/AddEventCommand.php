@@ -3,6 +3,7 @@
 namespace TheAentMachine\AentDockerCompose\Command;
 
 use Symfony\Component\Filesystem\Filesystem;
+use TheAentMachine\Aenthill\Aenthill;
 use TheAentMachine\Aenthill\CommonEvents;
 use TheAentMachine\Aenthill\CommonMetadata;
 use TheAentMachine\Aenthill\Manifest;
