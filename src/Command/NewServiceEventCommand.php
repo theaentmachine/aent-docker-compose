@@ -10,15 +10,17 @@ use TheAentMachine\Aenthill\CommonMetadata;
 use TheAentMachine\Aenthill\Manifest;
 use TheAentMachine\Aenthill\Pheromone;
 use TheAentMachine\Command\AbstractJsonEventCommand;
+use TheAentMachine\Exception\CommonAentsException;
 use TheAentMachine\Exception\ManifestException;
 use TheAentMachine\Exception\MissingEnvironmentVariableException;
+use TheAentMachine\Service\Exception\ServiceException;
 use TheAentMachine\Service\Service;
 
 class NewServiceEventCommand extends AbstractJsonEventCommand
 {
     protected function getEventName(): string
     {
-        return 'NEW_SERVICE';
+        return CommonEvents::NEW_SERVICE_EVENT;
     }
 
     /**
@@ -26,8 +28,8 @@ class NewServiceEventCommand extends AbstractJsonEventCommand
      * @return array|null
      * @throws ManifestException
      * @throws MissingEnvironmentVariableException
-     * @throws \TheAentMachine\Service\Exception\ServiceException
-     * @throws \TheAentMachine\Exception\CommonAentsException
+     * @throws ServiceException
+     * @throws CommonAentsException
      */
     protected function executeJsonEvent(array $payload): ?array
     {
@@ -61,7 +63,7 @@ class NewServiceEventCommand extends AbstractJsonEventCommand
 
     /**
      * @throws ManifestException
-     * @throws \TheAentMachine\Service\Exception\ServiceException
+     * @throws ServiceException
      */
     private function runAddReverseProxy(string $dockerComposePath): void
     {
@@ -79,7 +81,7 @@ class NewServiceEventCommand extends AbstractJsonEventCommand
 
     /**
      * @throws ManifestException
-     * @throws \TheAentMachine\Service\Exception\ServiceException
+     * @throws ServiceException
      */
     private function newVirtualHost(string $dockerComposePath, string $serviceName, int $virtualPort = 80, string $virtualHost = null): void
     {
