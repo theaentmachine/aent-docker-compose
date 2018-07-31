@@ -11,4 +11,3 @@ before_install:
 
 script:
   - orbit run ci
-  - bash <(curl -s https://codecov.io/bash)

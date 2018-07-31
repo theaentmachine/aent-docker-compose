@@ -3,6 +3,7 @@
 namespace TheAentMachine\AentDockerCompose\Command;
 
 use Symfony\Component\Filesystem\Filesystem;
+use TheAentMachine\Aenthill\Aenthill;
 use TheAentMachine\Aenthill\CommonEvents;
 use TheAentMachine\Aenthill\Manifest;
 use TheAentMachine\Aenthill\CommonMetadata;
@@ -29,8 +30,6 @@ class AddEventCommand extends AbstractEventCommand
         $aentHelper->title('Installing a Docker Compose orchestrator');
         $envType = $aentHelper->getCommonQuestions()->askForEnvType();
         $envName = $aentHelper->getCommonQuestions()->askForEnvName($envType);
-
-        $aentHelper->getCommonQuestions()->askForCI();
 
         $projectDir = Pheromone::getContainerProjectDirectory();
         $fileNameChoices= [];
@@ -64,6 +63,13 @@ class AddEventCommand extends AbstractEventCommand
         Manifest::addMetadata(CommonMetadata::DOCKER_COMPOSE_FILENAME_KEY, $fileName);
 
         $this->output->writeln("Docker Compose file <info>$fileName</info> has been successfully created!");
+        $aentHelper->spacer();
+
+        $CIaentID = $aentHelper->getCommonQuestions()->askForCI();
+        if (null !== $CIaentID) {
+            Aenthill::run($CIaentID, CommonEvents::ADD_EVENT);
+            Aenthill::run($CIaentID, CommonEvents::NEW_DEPLOY_DOCKER_COMPOSE_JOB_EVENT, $fileName);
+        }
 
         return null;
     }
