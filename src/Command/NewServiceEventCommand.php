@@ -39,7 +39,22 @@ class NewServiceEventCommand extends AbstractJsonEventCommand
         }
 
         $fileName = Manifest::mustGetMetadata(CommonMetadata::DOCKER_COMPOSE_FILENAME_KEY);
+        $dockerComposePath = Pheromone::getContainerProjectDirectory() . '/' . $fileName;
+
         $this->getAentHelper()->title($fileName);
+
+        // Virtual Host
+        if ($service->getNeedVirtualHost()) {
+            if (null === Manifest::getDependency(CommonDependencies::REVERSE_PROXY_KEY)) {
+                $this->getAentHelper()->getCommonQuestions()->askForReverseProxy();
+                $this->runAddReverseProxy($dockerComposePath);
+            }
+            $service = $this->newVirtualHost($service);
+        }
+
+        if ($service->getNeedBuild()) {
+            $service = $this->newImageToBuild($service);
+        }
 
         $serviceName = $service->getServiceName();
         $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service);
@@ -49,20 +64,13 @@ class NewServiceEventCommand extends AbstractJsonEventCommand
         $dockerComposePath = Pheromone::getContainerProjectDirectory() . '/' . $fileName;
         DockerComposeService::mergeContentInDockerComposeFile($formattedPayload, $dockerComposePath, true);
 
-        // Virtual Host
-        if ($service->getNeedVirtualHost()) {
-            if (null === Manifest::getDependency(CommonDependencies::REVERSE_PROXY_KEY)) {
-                $this->getAentHelper()->getCommonQuestions()->askForReverseProxy();
-                $this->runAddReverseProxy($dockerComposePath);
-            }
-            $this->newVirtualHost($dockerComposePath, $serviceName);
-        }
         $this->output->writeln("Service <info>$serviceName</info> has been successfully added in <info>$fileName</info>!");
 
         return null;
     }
 
     /**
+     * @param string $dockerComposePath
      * @throws ManifestException
      * @throws ServiceException
      */
@@ -80,28 +88,64 @@ class NewServiceEventCommand extends AbstractJsonEventCommand
         $this->output->writeln("Reverse proxy <info>$serviceName</info> has been successfully added in <info>$fileName</info>!");
     }
 
+
     /**
+     * @param Service $service
+     * @return Service
      * @throws ManifestException
      * @throws ServiceException
      */
-    private function newVirtualHost(string $dockerComposePath, string $serviceName, int $virtualPort = 80, string $virtualHost = null): void
+    private function newVirtualHost(Service $service): Service
     {
-        $message = [
-            'service' => $serviceName,
-            'virtualPort' => $virtualPort
-        ];
-        if ($virtualHost !== null) {
-            $message['virtualHost'] = $virtualHost;
-        }
         $reverseProxyKey = Manifest::mustGetDependency(CommonDependencies::REVERSE_PROXY_KEY);
-        $repliedPayloads = Aenthill::runJson($reverseProxyKey, CommonEvents::NEW_VIRTUAL_HOST_EVENT, $message);
+        $repliedPayloads = Aenthill::runJson($reverseProxyKey, CommonEvents::NEW_VIRTUAL_HOST_EVENT, $service->jsonSerialize());
         $payload = \GuzzleHttp\json_decode($repliedPayloads[0], true);
         $service = Service::parsePayload($payload);
-        $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service);
-        DockerComposeService::mergeContentInDockerComposeFile($formattedPayload, $dockerComposePath, true);
 
         $serviceName = $service->getServiceName();
-        $fileName = Manifest::mustGetMetadata(CommonMetadata::DOCKER_COMPOSE_FILENAME_KEY);
-        $this->output->writeln("A new virtual host has been successfully added for <info>$serviceName</info> in <info>$fileName</info>!");
+        $this->output->writeln("A new virtual host has been successfully added for <info>$serviceName</info>!");
+        $this->getAentHelper()->spacer();
+
+        return $service;
+    }
+
+    /**
+     * @param Service $service
+     * @return Service
+     */
+    private function newImageToBuild(Service $service): Service
+    {
+        $imageBuilderAentID = Manifest::getDependency(CommonDependencies::IMAGE_BUILDER_KEY);
+        if (null === $imageBuilderAentID) {
+            return $service;
+        }
+
+        $repliedPayloads = Aenthill::runJson($imageBuilderAentID, CommonEvents::NEW_IMAGE_EVENT, $service->imageJsonSerialize());
+        $payload = \GuzzleHttp\json_decode($repliedPayloads[0], true);
+        $dockerfileName = $payload['dockerfileName'];
+        $this->getAentHelper()->spacer();
+
+        $CIAentID = Manifest::getDependency(CommonDependencies::CI_KEY);
+        if (null === $CIAentID) {
+            return $service;
+        }
+
+        $serviceName = $service->getServiceName();
+
+        $repliedPayloads = Aenthill::runJson($CIAentID, CommonEvents::NEW_BUILD_IMAGE_JOB_EVENT, [
+            'serviceName' => $serviceName,
+            'dockerfileName' => $dockerfileName,
+        ]);
+        $payload = \GuzzleHttp\json_decode($repliedPayloads[0], true);
+
+        $dockerImageName = $payload['dockerImageName'];
+        $service->setImage($dockerImageName);
+        $service->removeAllBindVolumes();
+
+        $this->getAentHelper()->spacer();
+        $this->output->writeln("Service <info>$serviceName</info> is now using image <info>$dockerImageName</info>!");
+        $this->getAentHelper()->spacer();
+
+        return $service;
     }
 }

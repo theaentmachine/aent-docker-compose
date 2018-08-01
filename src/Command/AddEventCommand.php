@@ -62,14 +62,17 @@ class AddEventCommand extends AbstractEventCommand
         chgrp($dockerComposePath, $dirInfo->getGroup());
         Manifest::addMetadata(CommonMetadata::DOCKER_COMPOSE_FILENAME_KEY, $fileName);
 
+        $CIAentID = $aentHelper->getCommonQuestions()->askForCI();
+        if (null !== $CIAentID) {
+            Aenthill::run($CIAentID, CommonEvents::ADD_EVENT);
+            Aenthill::run($CIAentID, CommonEvents::NEW_DEPLOY_DOCKER_COMPOSE_JOB_EVENT, $fileName);
+            $aentHelper->spacer();
+        }
+
+        $aentHelper->getCommonQuestions()->askForImageBuilder();
+
         $this->output->writeln("Docker Compose file <info>$fileName</info> has been successfully created!");
         $aentHelper->spacer();
-
-        $CIaentID = $aentHelper->getCommonQuestions()->askForCI();
-        if (null !== $CIaentID) {
-            Aenthill::run($CIaentID, CommonEvents::ADD_EVENT);
-            Aenthill::run($CIaentID, CommonEvents::NEW_DEPLOY_DOCKER_COMPOSE_JOB_EVENT, $fileName);
-        }
 
         return null;
     }
