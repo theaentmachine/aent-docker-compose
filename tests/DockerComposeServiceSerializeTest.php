@@ -57,8 +57,6 @@ services:
       foo: fooo
       bar: baar
     environment:
-      FOO: foo
-      BAR: bar
       BAZ: baz
       # foobar
       QUX: qux
@@ -76,6 +74,8 @@ services:
       -
         type: tmpfs
         source: baz
+    env_file:
+      - .env.foobar
 volumes:
   foo: null
 
@@ -86,7 +86,7 @@ YAML;
         $payload = json_decode(self::VALID_PAYLOAD, true);
         $service = Service::parsePayload($payload);
 
-        $out = DockerComposeService::dockerComposeServiceSerialize($service, null, DockerComposeService::VERSION);
+        $out = DockerComposeService::dockerComposeServiceSerialize($service, '.env.foobar', DockerComposeService::VERSION);
         $yaml = YamlTools::dump($out);
         self::assertEquals(self::PAYLOAD_AFTER_DOCKER_COMPOSE_SERVICE_SERIALIZE, $yaml);
     }

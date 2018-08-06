@@ -31,9 +31,6 @@ class DockerComposeService
         $portMap = function (array $port): string {
             return $port['source'] . ':' . $port['target'];
         };
-        $labelMap = function (array $label): string {
-            return $label['value'];
-        };
         $envMapDockerCompose = self::getEnvironmentVariablesForDockerCompose($service);
 
         $envMap = function (EnvVariable $e) {
@@ -65,13 +62,16 @@ class DockerComposeService
                     'command' => $service->getCommand(),
                     'depends_on' => $service->getDependsOn(),
                     'ports' => array_map($portMap, $service->getPorts()),
-                    'labels' => array_map($labelMap, $service->getLabels()),
+                    'labels' => $service->getLabels(),
                     'environment' => array_map($envMap, $envMapDockerCompose),
                     'volumes' => array_map($volumeMap, $service->getVolumes()),
-                    'env_file' => [ $envFileName ]
                 ]),
             ],
         ];
+        if ($envFileName) {
+            $dockerService['services'][$service->getServiceName()]['env_file'][] = $envFileName;
+        }
+
         $namedVolumes = array();
         /** @var Volume $volume */
         foreach ($service->getVolumes() as $volume) {
