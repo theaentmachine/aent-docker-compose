@@ -180,5 +180,4 @@ class DockerComposeService
         }
         return $envMapDotEnvFile;
     }
-
 }

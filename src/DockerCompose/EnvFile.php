@@ -3,7 +3,6 @@
 
 namespace TheAentMachine\AentDockerCompose\DockerCompose;
 
-
 class EnvFile
 {
     /**
@@ -20,15 +19,17 @@ class EnvFile
     /**
      * Adds or updates an environment variable.
      */
-    public function set(string $key, string $value, string $comment = null)
+    public function set(string $key, string $value, string $comment = null): void
     {
         $content = $this->getContent();
         if ($this->has($key)) {
             // Note: if the key is already in the file, comments are not modified.
             $content = \preg_replace("/^$key=.*/m", $key.'='.$value, $content);
         } else {
-            $commentLines = \explode("\n", $comment);
-            $commentLines = \array_map(function(string $line) { return '# '.$line; }, $commentLines);
+            $commentLines = \explode("\n", $comment ?? '');
+            $commentLines = \array_map(function (string $line) {
+                return '# '.$line;
+            }, $commentLines);
             $comments = \implode("\n", $commentLines);
             if ($comment) {
                 $content .= <<<ENVVAR
@@ -40,14 +41,12 @@ ENVVAR;
 $key=$value
 
 ENVVAR;
-
         }
 
         $return = \file_put_contents($this->filePath, $content);
         if ($return === false) {
             throw new \RuntimeException('Unable to write file '.$this->filePath);
         }
-
     }
 
     private function has(string $envName): bool
@@ -56,7 +55,7 @@ ENVVAR;
             return false;
         }
         $content = $this->getContent();
-        return \preg_match("/^$envName=/m", $content);
+        return (bool) \preg_match("/^$envName=/m", $content);
     }
 
     private function getContent(): string
