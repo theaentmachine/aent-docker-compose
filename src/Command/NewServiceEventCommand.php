@@ -3,6 +3,7 @@
 namespace TheAentMachine\AentDockerCompose\Command;
 
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
+use TheAentMachine\AentDockerCompose\DockerCompose\EnvFile;
 use TheAentMachine\Aenthill\Aenthill;
 use TheAentMachine\Aenthill\CommonDependencies;
 use TheAentMachine\Aenthill\CommonEvents;
@@ -63,6 +64,14 @@ class NewServiceEventCommand extends AbstractJsonEventCommand
         // docker-compose
         $dockerComposePath = Pheromone::getContainerProjectDirectory() . '/' . $fileName;
         DockerComposeService::mergeContentInDockerComposeFile($formattedPayload, $dockerComposePath, true);
+
+        // Now, let's merge the env files:
+        $envMapDotEnvFile = DockerComposeService::getEnvironmentVariablesForDotEnv($service);
+        // TODO: name of file is certainly impacted by name of docker-compose file.
+        $dotEnvFile = new EnvFile(Pheromone::getContainerProjectDirectory() . '/' . '.env-' .$service->getServiceName());
+        foreach ($envMapDotEnvFile as $key => $env) {
+            $dotEnvFile->set($key, $env->getValue(), $env->getComment());
+        }
 
         $this->output->writeln("Service <info>$serviceName</info> has been successfully added in <info>$fileName</info>!");
 

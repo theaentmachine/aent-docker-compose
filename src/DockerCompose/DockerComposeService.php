@@ -5,6 +5,7 @@ namespace TheAentMachine\AentDockerCompose\DockerCompose;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
+use TheAentMachine\Service\Enum\EnvVariableTypeEnum;
 use TheAentMachine\Service\Enum\VolumeTypeEnum;
 use TheAentMachine\Service\Environment\EnvVariable;
 use TheAentMachine\Service\Service;
@@ -12,6 +13,8 @@ use TheAentMachine\Service\Volume\BindVolume;
 use TheAentMachine\Service\Volume\NamedVolume;
 use TheAentMachine\Service\Volume\TmpfsVolume;
 use TheAentMachine\Service\Volume\Volume;
+use TheAentMachine\Yaml\CommentedItem;
+use TheAentMachine\Yaml\Dumper;
 use TheAentMachine\YamlTools\YamlTools;
 
 class DockerComposeService
@@ -31,7 +34,12 @@ class DockerComposeService
         $labelMap = function (array $label): string {
             return $label['value'];
         };
-        $envMap = function (EnvVariable $e): string {
+        $envMapDockerCompose = self::getEnvironmentVariablesForDockerCompose($service);
+
+        $envMap = function (EnvVariable $e) {
+            if ($e->getComment() !== null) {
+                return new CommentedItem($e->getValue(), $e->getComment());
+            }
             return $e->getValue();
         };
         /**
@@ -58,7 +66,7 @@ class DockerComposeService
                     'depends_on' => $service->getDependsOn(),
                     'ports' => array_map($portMap, $service->getPorts()),
                     'labels' => array_map($labelMap, $service->getLabels()),
-                    'environment' => array_map($envMap, $service->getEnvironment()),
+                    'environment' => array_map($envMap, $envMapDockerCompose),
                     'volumes' => array_map($volumeMap, $service->getVolumes()),
                 ]),
             ],
@@ -110,7 +118,7 @@ class DockerComposeService
     public static function mergeContentInDockerComposeFiles($content, array $files, bool $checkValidity = true): void
     {
         if (\is_array($content)) {
-            $content = Yaml::dump($content, 256, 2, Yaml::DUMP_OBJECT_AS_MAP);
+            $content = YamlTools::dump($content);
         }
 
         if ($checkValidity) {
@@ -141,4 +149,36 @@ class DockerComposeService
             }
         }
     }
+
+    /**
+     * @param Service $service
+     * @return array<string,EnvVariable>
+     */
+    public static function getEnvironmentVariablesForDockerCompose(Service $service): array
+    {
+        $envMapDockerCompose = [];
+        foreach ($service->getEnvironment() as $key => $env) {
+            // TODO: in prod mode, the EnvVariableTypeEnum::IMAGE_ENV_VARIABLE should not add a variable in the docker-compose file
+            if (\in_array($env->getType(), [EnvVariableTypeEnum::CONTAINER_ENV_VARIABLE, EnvVariableTypeEnum::IMAGE_ENV_VARIABLE])) {
+                $envMapDockerCompose[$key] = $env;
+            }
+        }
+        return $envMapDockerCompose;
+    }
+
+    /**
+     * @param Service $service
+     * @return array<string,EnvVariable>
+     */
+    public static function getEnvironmentVariablesForDotEnv(Service $service): array
+    {
+        $envMapDotEnvFile = [];
+        foreach ($service->getEnvironment() as $key => $env) {
+            if (\in_array($env->getType(), [EnvVariableTypeEnum::SHARED_ENV_VARIABLE, EnvVariableTypeEnum::SHARED_SECRET])) {
+                $envMapDotEnvFile[$key] = $env;
+            }
+        }
+        return $envMapDotEnvFile;
+    }
+
 }
