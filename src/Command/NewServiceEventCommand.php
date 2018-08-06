@@ -58,20 +58,26 @@ class NewServiceEventCommand extends AbstractJsonEventCommand
         }
 
         $serviceName = $service->getServiceName();
-        $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service);
-        $this->log->debug(\GuzzleHttp\json_encode($formattedPayload, JSON_PRETTY_PRINT));
+
+        // .env-xxx file
+        $envMapDotEnvFile = DockerComposeService::getEnvironmentVariablesForDotEnv($service);
+        $envFilePath = null;
+        if ($envMapDotEnvFile) {
+            // TODO: name of file is certainly impacted by name of docker-compose file.
+            $envFilePath = '.env-' .$service->getServiceName();
+            $dotEnvFile = new EnvFile(Pheromone::getContainerProjectDirectory() . '/' . $envFilePath);
+            foreach ($envMapDotEnvFile as $key => $env) {
+                $dotEnvFile->set($key, $env->getValue(), $env->getComment());
+            }
+        }
+
 
         // docker-compose
+        $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service, $envFilePath);
+        $this->log->debug(\GuzzleHttp\json_encode($formattedPayload, JSON_PRETTY_PRINT));
+
         $dockerComposePath = Pheromone::getContainerProjectDirectory() . '/' . $fileName;
         DockerComposeService::mergeContentInDockerComposeFile($formattedPayload, $dockerComposePath, true);
-
-        // Now, let's merge the env files:
-        $envMapDotEnvFile = DockerComposeService::getEnvironmentVariablesForDotEnv($service);
-        // TODO: name of file is certainly impacted by name of docker-compose file.
-        $dotEnvFile = new EnvFile(Pheromone::getContainerProjectDirectory() . '/' . '.env-' .$service->getServiceName());
-        foreach ($envMapDotEnvFile as $key => $env) {
-            $dotEnvFile->set($key, $env->getValue(), $env->getComment());
-        }
 
         $this->output->writeln("Service <info>$serviceName</info> has been successfully added in <info>$fileName</info>!");
 

@@ -26,7 +26,7 @@ class DockerComposeService
      * @param string $version
      * @return mixed[]
      */
-    public static function dockerComposeServiceSerialize(Service $service, string $version = self::VERSION): array
+    public static function dockerComposeServiceSerialize(Service $service, ?string $envFileName = null, string $version = self::VERSION): array
     {
         $portMap = function (array $port): string {
             return $port['source'] . ':' . $port['target'];
@@ -68,6 +68,7 @@ class DockerComposeService
                     'labels' => array_map($labelMap, $service->getLabels()),
                     'environment' => array_map($envMap, $envMapDockerCompose),
                     'volumes' => array_map($volumeMap, $service->getVolumes()),
+                    'env_file' => [ $envFileName ]
                 ]),
             ],
         ];
