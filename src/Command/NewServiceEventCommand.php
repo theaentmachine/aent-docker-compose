@@ -3,6 +3,7 @@
 namespace TheAentMachine\AentDockerCompose\Command;
 
 use TheAentMachine\AentDockerCompose\DockerCompose\DockerComposeService;
+use TheAentMachine\AentDockerCompose\DockerCompose\EnvFile;
 use TheAentMachine\Aenthill\Aenthill;
 use TheAentMachine\Aenthill\CommonDependencies;
 use TheAentMachine\Aenthill\CommonEvents;
@@ -57,10 +58,24 @@ class NewServiceEventCommand extends AbstractJsonEventCommand
         }
 
         $serviceName = $service->getServiceName();
-        $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service);
-        $this->log->debug(\GuzzleHttp\json_encode($formattedPayload, JSON_PRETTY_PRINT));
+
+        // .env-xxx file
+        $envMapDotEnvFile = DockerComposeService::getEnvironmentVariablesForDotEnv($service);
+        $envFilePath = null;
+        if ($envMapDotEnvFile) {
+            // TODO: name of file is certainly impacted by name of docker-compose file.
+            $envFilePath = '.env-' .$service->getServiceName();
+            $dotEnvFile = new EnvFile(Pheromone::getContainerProjectDirectory() . '/' . $envFilePath);
+            foreach ($envMapDotEnvFile as $key => $env) {
+                $dotEnvFile->set($key, $env->getValue(), $env->getComment());
+            }
+        }
+
 
         // docker-compose
+        $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service, $envFilePath);
+        $this->log->debug(\GuzzleHttp\json_encode($formattedPayload, JSON_PRETTY_PRINT));
+
         $dockerComposePath = Pheromone::getContainerProjectDirectory() . '/' . $fileName;
         DockerComposeService::mergeContentInDockerComposeFile($formattedPayload, $dockerComposePath, true);
 
