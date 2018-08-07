@@ -40,12 +40,17 @@ class NewServiceEventCommand extends AbstractJsonEventCommand
         }
 
         $fileName = Manifest::mustGetMetadata(CommonMetadata::DOCKER_COMPOSE_FILENAME_KEY);
+        if ($fileName === 'docker-compose.yml') {
+            $envPrefix = '';
+        } else {
+            $envPrefix = '-' . Manifest::mustGetMetadata(CommonMetadata::ENV_NAME_KEY);
+        }
         $dockerComposePath = Pheromone::getContainerProjectDirectory() . '/' . $fileName;
 
         $this->getAentHelper()->title($fileName);
 
         // Virtual Host
-        if ($service->getNeedVirtualHost()) {
+        if (!empty($service->getVirtualHosts())) {
             if (null === Manifest::getDependency(CommonDependencies::REVERSE_PROXY_KEY)) {
                 $this->getAentHelper()->getCommonQuestions()->askForReverseProxy();
                 $this->runAddReverseProxy($dockerComposePath);
@@ -61,19 +66,18 @@ class NewServiceEventCommand extends AbstractJsonEventCommand
 
         // .env-xxx file
         $envMapDotEnvFile = DockerComposeService::getEnvironmentVariablesForDotEnv($service);
-        $envFilePath = null;
-        if ($envMapDotEnvFile) {
+        $envFilePaths = [];
+        foreach ($envMapDotEnvFile as $key => $sharedEnvVariable) {
             // TODO: name of file is certainly impacted by name of docker-compose file.
-            $envFilePath = '.env-' .$service->getServiceName();
+            $envFilePath = '.' . $sharedEnvVariable->getContainerId() . $envPrefix . '.env';
+            $envFilePaths[] = $envFilePath;
             $dotEnvFile = new EnvFile(Pheromone::getContainerProjectDirectory() . '/' . $envFilePath);
-            foreach ($envMapDotEnvFile as $key => $env) {
-                $dotEnvFile->set($key, $env->getValue(), $env->getComment());
-            }
+            $dotEnvFile->set($key, $sharedEnvVariable->getValue(), $sharedEnvVariable->getComment());
         }
-
+        $envFilePaths = array_unique($envFilePaths);
 
         // docker-compose
-        $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service, $envFilePath);
+        $formattedPayload = DockerComposeService::dockerComposeServiceSerialize($service, $envFilePaths);
         $this->log->debug(\GuzzleHttp\json_encode($formattedPayload, JSON_PRETTY_PRINT));
 
         $dockerComposePath = Pheromone::getContainerProjectDirectory() . '/' . $fileName;

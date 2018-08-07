@@ -8,6 +8,7 @@ use Symfony\Component\Yaml\Yaml;
 use TheAentMachine\Service\Enum\EnvVariableTypeEnum;
 use TheAentMachine\Service\Enum\VolumeTypeEnum;
 use TheAentMachine\Service\Environment\EnvVariable;
+use TheAentMachine\Service\Environment\SharedEnvVariable;
 use TheAentMachine\Service\Service;
 use TheAentMachine\Service\Volume\BindVolume;
 use TheAentMachine\Service\Volume\NamedVolume;
@@ -23,10 +24,11 @@ class DockerComposeService
 
     /**
      * @param Service $service
+     * @param string[] $envFileNames
      * @param string $version
      * @return mixed[]
      */
-    public static function dockerComposeServiceSerialize(Service $service, ?string $envFileName = null, string $version = self::VERSION): array
+    public static function dockerComposeServiceSerialize(Service $service, array $envFileNames = [], string $version = self::VERSION): array
     {
         $portMap = function (array $port): string {
             return $port['source'] . ':' . $port['target'];
@@ -68,8 +70,8 @@ class DockerComposeService
                 ]),
             ],
         ];
-        if ($envFileName) {
-            $dockerService['services'][$service->getServiceName()]['env_file'][] = $envFileName;
+        if ($envFileNames) {
+            $dockerService['services'][$service->getServiceName()]['env_file'] = $envFileNames;
         }
 
         $namedVolumes = array();
@@ -91,11 +93,31 @@ class DockerComposeService
      */
     public static function checkDockerComposeFileValidity(string $pathname): void
     {
-        $command = ['docker-compose', '-f', $pathname, 'config', '-q'];
+        // We cannot check the env_file directive as it is reading env files that are not available in the temporary directory.
+        // Therefore, we need to remove the env_file before checking.
+        $strFile = \file_get_contents($pathname);
+        if ($strFile === false) {
+            throw new \RuntimeException('Unable to load file '.$pathname);
+        }
+        $content = Yaml::parse($strFile);
+        if (isset($content['services'])) {
+            $services = $content['services'];
+            foreach ($services as $key => &$service) {
+                unset($service['env_file']);
+            }
+            $content['services'] = $services;
+        }
+        \file_put_contents('/tmp/docker-compose-check.yml', YamlTools::dump($content));
+
+        $command = ['docker-compose', '-f', '/tmp/docker-compose-check.yml', 'config', '-q'];
         $process = new Process($command);
         $process->enableOutput();
         $process->setTty(true);
-        $process->mustRun();
+        try {
+            $process->mustRun();
+        } finally {
+            unlink('/tmp/docker-compose-check.yml');
+        }
     }
 
 
@@ -157,28 +179,15 @@ class DockerComposeService
      */
     public static function getEnvironmentVariablesForDockerCompose(Service $service): array
     {
-        $envMapDockerCompose = [];
-        foreach ($service->getEnvironment() as $key => $env) {
-            // TODO: in prod mode, the EnvVariableTypeEnum::IMAGE_ENV_VARIABLE should not add a variable in the docker-compose file
-            if (\in_array($env->getType(), [EnvVariableTypeEnum::CONTAINER_ENV_VARIABLE, EnvVariableTypeEnum::IMAGE_ENV_VARIABLE])) {
-                $envMapDockerCompose[$key] = $env;
-            }
-        }
-        return $envMapDockerCompose;
+        return $service->getAllContainerEnvVariable() + $service->getAllImageEnvVariable();
     }
 
     /**
      * @param Service $service
-     * @return array<string,EnvVariable>
+     * @return array<string,SharedEnvVariable>
      */
     public static function getEnvironmentVariablesForDotEnv(Service $service): array
     {
-        $envMapDotEnvFile = [];
-        foreach ($service->getEnvironment() as $key => $env) {
-            if (\in_array($env->getType(), [EnvVariableTypeEnum::SHARED_ENV_VARIABLE, EnvVariableTypeEnum::SHARED_SECRET])) {
-                $envMapDotEnvFile[$key] = $env;
-            }
-        }
-        return $envMapDotEnvFile;
+        return $service->getAllSharedSecret() + $service->getAllSharedEnvVariable();
     }
 }
