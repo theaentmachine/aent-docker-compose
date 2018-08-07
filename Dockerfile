@@ -5,7 +5,7 @@ COPY composer.lock composer.lock
 
 RUN composer install --no-dev
 
-FROM theaentmachine/base-php-aent:0.0.17
+FROM theaentmachine/base-php-aent:0.0.19
 
 # Installs docker-compose (as content validator).
 RUN pip3 install --no-cache-dir docker-compose

@@ -51,15 +51,15 @@ ENVVAR;
 
     private function has(string $envName): bool
     {
-        if (!\file_exists($this->filePath)) {
-            return false;
-        }
         $content = $this->getContent();
         return (bool) \preg_match("/^$envName=/m", $content);
     }
 
     private function getContent(): string
     {
+        if (!\file_exists($this->filePath)) {
+            return '';
+        }
         $content = \file_get_contents($this->filePath);
         if ($content === false) {
             throw new \RuntimeException('Unable to read file '.$this->filePath);
