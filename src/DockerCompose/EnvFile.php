@@ -3,6 +3,8 @@
 
 namespace TheAentMachine\AentDockerCompose\DockerCompose;
 
+use Symfony\Component\Filesystem\Filesystem;
+
 class EnvFile
 {
     /**
@@ -12,7 +14,6 @@ class EnvFile
 
     public function __construct(string $filePath)
     {
-
         $this->filePath = $filePath;
     }
 
@@ -43,10 +44,11 @@ $key=$value
 ENVVAR;
         }
 
-        $return = \file_put_contents($this->filePath, $content);
-        if ($return === false) {
-            throw new \RuntimeException('Unable to write file '.$this->filePath);
-        }
+        $fileSystem = new Filesystem();
+        $fileSystem->dumpFile($this->filePath, $content);
+        $dirInfo = new \SplFileInfo(\dirname($this->filePath));
+        chown($this->filePath, $dirInfo->getOwner());
+        chgrp($this->filePath, $dirInfo->getGroup());
     }
 
     private function has(string $envName): bool
