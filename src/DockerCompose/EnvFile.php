@@ -20,7 +20,7 @@ class EnvFile
     /**
      * Adds or updates an environment variable.
      */
-    public function set(string $key, string $value, string $comment = null): void
+    public function set(string $key, string $value, string $comment = null, bool $setOwnership = true): void
     {
         $content = $this->getContent();
         if ($this->has($key)) {
@@ -46,9 +46,12 @@ ENVVAR;
 
         $fileSystem = new Filesystem();
         $fileSystem->dumpFile($this->filePath, $content);
-        $dirInfo = new \SplFileInfo(\dirname($this->filePath));
-        chown($this->filePath, $dirInfo->getOwner());
-        chgrp($this->filePath, $dirInfo->getGroup());
+
+        if ($setOwnership) {
+            $dirInfo = new \SplFileInfo(\dirname($this->filePath));
+            chown($this->filePath, $dirInfo->getOwner());
+            chgrp($this->filePath, $dirInfo->getGroup());
+        }
     }
 
     private function has(string $envName): bool
