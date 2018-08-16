@@ -62,11 +62,17 @@ class AddEventCommand extends AbstractEventCommand
         chgrp($dockerComposePath, $dirInfo->getGroup());
         Manifest::addMetadata(CommonMetadata::DOCKER_COMPOSE_FILENAME_KEY, $fileName);
 
-        $CIAentID = $aentHelper->getCommonQuestions()->askForCI();
-        if (null !== $CIAentID) {
-            Aenthill::run($CIAentID, CommonEvents::ADD_EVENT);
-            Aenthill::run($CIAentID, CommonEvents::NEW_DEPLOY_DOCKER_COMPOSE_JOB_EVENT, $fileName);
-            $aentHelper->spacer();
+        $addCI = $aentHelper->question('Do you use a CI/CD ?')
+            ->yesNoQuestion()
+            ->compulsory()
+            ->ask();
+        if ($addCI) {
+            $CIAentID = $aentHelper->getCommonQuestions()->askForCI();
+            if (null !== $CIAentID) {
+                Aenthill::run($CIAentID, CommonEvents::ADD_EVENT, '1'); // 1 for single environment (single branch)
+                Aenthill::run($CIAentID, CommonEvents::NEW_DEPLOY_DOCKER_COMPOSE_JOB_EVENT, $fileName);
+                $aentHelper->spacer();
+            }
         }
 
         $aentHelper->getCommonQuestions()->askForImageBuilder();
