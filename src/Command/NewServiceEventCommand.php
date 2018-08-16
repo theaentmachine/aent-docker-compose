@@ -14,6 +14,7 @@ use TheAentMachine\Command\AbstractJsonEventCommand;
 use TheAentMachine\Exception\CommonAentsException;
 use TheAentMachine\Exception\ManifestException;
 use TheAentMachine\Exception\MissingEnvironmentVariableException;
+use TheAentMachine\Service\Environment\SharedEnvVariable;
 use TheAentMachine\Service\Exception\ServiceException;
 use TheAentMachine\Service\Service;
 
@@ -67,6 +68,10 @@ class NewServiceEventCommand extends AbstractJsonEventCommand
         // .env-xxx file
         $envMapDotEnvFile = DockerComposeService::getEnvironmentVariablesForDotEnv($service);
         $envFilePaths = [];
+        /**
+         * @var string $key
+         * @var SharedEnvVariable $sharedEnvVariable
+         */
         foreach ($envMapDotEnvFile as $key => $sharedEnvVariable) {
             // TODO: name of file is certainly impacted by name of docker-compose file.
             $envFilePath = '.' . $sharedEnvVariable->getContainerId() . $envPrefix . '.env';
