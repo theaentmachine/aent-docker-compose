@@ -5,17 +5,14 @@ namespace TheAentMachine\AentDockerCompose\DockerCompose;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
-use TheAentMachine\Service\Enum\EnvVariableTypeEnum;
 use TheAentMachine\Service\Enum\VolumeTypeEnum;
 use TheAentMachine\Service\Environment\EnvVariable;
-use TheAentMachine\Service\Environment\SharedEnvVariable;
 use TheAentMachine\Service\Service;
 use TheAentMachine\Service\Volume\BindVolume;
 use TheAentMachine\Service\Volume\NamedVolume;
 use TheAentMachine\Service\Volume\TmpfsVolume;
 use TheAentMachine\Service\Volume\Volume;
 use TheAentMachine\Yaml\CommentedItem;
-use TheAentMachine\Yaml\Dumper;
 use TheAentMachine\YamlTools\YamlTools;
 
 class DockerComposeService
@@ -94,16 +91,17 @@ class DockerComposeService
     public static function checkDockerComposeFileValidity(string $pathname): void
     {
         // We cannot check the env_file directive as it is reading env files that are not available in the temporary directory.
+        // Plus we cannot check the depends_on with undefined classes.
         // Therefore, we need to remove the env_file before checking.
         $strFile = \file_get_contents($pathname);
         if ($strFile === false) {
-            throw new \RuntimeException('Unable to load file '.$pathname);
+            throw new \RuntimeException('Unable to load file ' . $pathname);
         }
         $content = Yaml::parse($strFile);
         if (isset($content['services'])) {
             $services = $content['services'];
             foreach ($services as $key => &$service) {
-                unset($service['env_file']);
+                unset($service['env_file'], $service['depends_on']);
             }
             $content['services'] = $services;
         }
