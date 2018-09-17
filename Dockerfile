@@ -3,12 +3,11 @@ FROM thecodingmachine/php:7.2-v1-cli as builder
 COPY composer.json composer.json
 COPY composer.lock composer.lock
 
+ENV PHP_EXTENSION_INTL=1
+
 RUN composer install --no-dev
 
-FROM theaentmachine/base-php-aent:0.0.19
-
-# Installs docker-compose (as content validator).
-RUN pip3 install --no-cache-dir docker-compose
+FROM theaentmachine/base-php-aent:0.0.23
 
 # Copies our aent entry point.
 COPY aent.sh /usr/bin/aent

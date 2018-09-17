@@ -3,11 +3,10 @@ sudo: required
 language: generic
 
 services:
-  - docker
-
-before_install:
-  - wget -qO- https://github.com/gulien/orbit/releases/download/v3.2.0/orbit_Linux_x86_64.tar.gz | tar xvz -C .
-  - sudo mv ./orbit /usr/local/bin && chmod +x /usr/local/bin/orbit
+- docker
 
 script:
-  - orbit run ci
+- docker run --rm -e PHP_EXTENSION_INTL=1 -v "$PWD":/usr/src/app thecodingmachine/php:7.2-v1-cli composer install
+- docker run --rm -e PHP_EXTENSION_INTL=1 -v "$PWD":/usr/src/app thecodingmachine/php:7.2-v1-cli composer run cs-check
+- docker run --rm -e PHP_EXTENSION_INTL=1 -v "$PWD":/usr/src/app thecodingmachine/php:7.2-v1-cli composer run phpstan
+- docker build . -t theaentmachine/aent-docker-compose:snapshot
