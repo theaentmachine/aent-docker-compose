@@ -11,6 +11,7 @@ use function Safe\sprintf;
 
 final class DockerComposeContext extends Context
 {
+    public const REVERSE_PROXY_SERVICE_DEPENDENCY_KEY = 'REVERSE_PROXY_SERVICE';
     public const CI_DEPENDENCY_KEY = 'CI';
 
     /** @var string */

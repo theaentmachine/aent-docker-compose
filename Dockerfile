@@ -7,7 +7,7 @@ ENV PHP_EXTENSION_INTL=1
 
 RUN composer install --no-dev
 
-FROM theaentmachine/base-php-aent:0.0.23
+FROM theaentmachine/base-php-aent:0.0.24
 
 # Copies our aent entry point.
 COPY aent.sh /usr/bin/aent
