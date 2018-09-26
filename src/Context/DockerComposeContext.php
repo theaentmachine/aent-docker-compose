@@ -3,16 +3,15 @@
 namespace TheAentMachine\AentDockerCompose\Context;
 
 use Safe\Exceptions\StringsException;
-use TheAentMachine\Aent\Context\Context;
+use TheAentMachine\Aent\Context\BaseOrchestratorContext;
 use TheAentMachine\Aenthill\Aenthill;
 use TheAentMachine\Aenthill\Pheromone;
 use TheAentMachine\Exception\MissingEnvironmentVariableException;
 use function Safe\sprintf;
 
-final class DockerComposeContext extends Context
+final class DockerComposeContext extends BaseOrchestratorContext
 {
     public const REVERSE_PROXY_SERVICE_DEPENDENCY_KEY = 'REVERSE_PROXY_SERVICE';
-    public const CI_DEPENDENCY_KEY = 'CI';
 
     /** @var string */
     private $projectDir;
@@ -22,12 +21,12 @@ final class DockerComposeContext extends Context
 
     /**
      * DockerComposeContext constructor.
-     * @param Context $context
+     * @param BaseOrchestratorContext $context
      * @throws MissingEnvironmentVariableException
      */
-    public function __construct(Context $context)
+    public function __construct(BaseOrchestratorContext $context)
     {
-        parent::__construct($context->getType(), $context->getName(), $context->getBaseVirtualHost());
+        parent::__construct($context->getEnvironmentType(), $context->getEnvironmentName(), $context->getBaseVirtualHost());
         $this->projectDir = Pheromone::getContainerProjectDirectory();
     }
 

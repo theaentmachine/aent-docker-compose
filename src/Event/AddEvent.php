@@ -5,9 +5,12 @@ namespace TheAentMachine\AentDockerCompose\Event;
 use Safe\Exceptions\FilesystemException;
 use Safe\Exceptions\StringsException;
 use Symfony\Component\Filesystem\Filesystem;
+use TheAentMachine\Aent\Context\BaseOrchestratorContext;
 use TheAentMachine\Aent\Context\Context;
+use TheAentMachine\Aent\Context\ContextInterface;
 use TheAentMachine\Aent\Event\Orchestrator\AbstractOrchestratorAddEvent;
-use TheAentMachine\Aent\Payload\Bootstrap\BootstrapPayload;
+use TheAentMachine\Aent\Payload\CI\DockerComposeDeployJobPayload;
+use TheAentMachine\Aent\Payload\ReverseProxy\ReverseProxyAddPayload;
 use TheAentMachine\Aent\Registry\ColonyRegistry;
 use TheAentMachine\Aent\Registry\Exception\ColonyRegistryException;
 use TheAentMachine\AentDockerCompose\Context\DockerComposeContext;
@@ -22,9 +25,6 @@ use TheAentMachine\Service\Service;
 
 final class AddEvent extends AbstractOrchestratorAddEvent
 {
-    /** @var Context */
-    private $bootstrapContext;
-
     /** @var DockerComposeContext */
     private $context;
 
@@ -32,50 +32,34 @@ final class AddEvent extends AbstractOrchestratorAddEvent
     private $reverseProxyServiceRegistry;
 
     /**
-     * @return void
-     * @throws ColonyRegistryException
-     */
-    protected function before(): void
-    {
-        $this->reverseProxyServiceRegistry = ColonyRegistry::reverseProxyServiceRegistry();
-        $this->output->writeln("\n👋 Hello! I'm the aent <info>Docker Compose</info> and I'm going to setup a nice <info>docker-compose.yml</info> file.");
-    }
-
-    /**
-     * @param BootstrapPayload $payload
+     * @return ContextInterface
      * @throws ColonyRegistryException
      * @throws FilesystemException
      * @throws MissingEnvironmentVariableException
      * @throws ServiceException
      * @throws StringsException
      */
-    protected function process(BootstrapPayload $payload): void
+    protected function setup(): ContextInterface
     {
-        $this->bootstrapContext = $payload->getContext();
-        $this->context = new DockerComposeContext($this->bootstrapContext);
+        $this->reverseProxyServiceRegistry = ColonyRegistry::reverseProxyServiceRegistry();
+        $this->context = new DockerComposeContext(BaseOrchestratorContext::fromMetadata());
         $this->context->setDockerComposeFilename($this->getDockerComposeFilename());
-        $this->output->writeln(sprintf("\n👌 Alright, I'm going to create the file <info>%s</info>!", $this->context->getDockerComposeFilename()));
         $this->createDockerComposeFile();
+        $this->output->writeln(sprintf("\n👌 Alright, I've created the file <info>%s</info>!", $this->context->getDockerComposeFilename()));
+        $this->prompt->printAltBlock("Docker Compose: adding reverse proxy...");
         $this->addReverseProxy();
-        // TODO CI
-        // TODO builder?
-        $this->context->toMetadata();
+        return $this->context;
     }
 
     /**
-     * @return void
-     * @throws StringsException
+     * @param ContextInterface $context
+     * @return ContextInterface
      */
-    protected function after(): void
+    protected function addDeployJobInCI(ContextInterface $context): ContextInterface
     {
-        $this->output->writeln(
-            sprintf(
-                "\nI've finished the setup of the file <info>%s</info> for your <info>%s</info> environment <info>%s</info>. See you later!",
-                $this->context->getDockerComposeFilename(),
-                $this->context->getType(),
-                $this->context->getName()
-            )
-        );
+        $payload = new DockerComposeDeployJobPayload($this->context->getDockerComposeFilename());
+        Aenthill::runJson(DockerComposeContext::CI_DEPENDENCY_KEY, 'DOCKER_COMPOSE_DEPLOY_JOB', $payload->toArray());
+        return $this->context;
     }
 
     /**
@@ -83,8 +67,8 @@ final class AddEvent extends AbstractOrchestratorAddEvent
      */
     private function getDockerComposeFilename(): string
     {
-        $environmentType = $this->context->getType();
-        $environmentName = $this->context->getName();
+        $environmentType = $this->context->getEnvironmentType();
+        $environmentName = $this->context->getEnvironmentName();
         $projectDir = $this->context->getProjectDir();
         $items = [];
         if (!\file_exists("$projectDir/docker-compose.yml")) {
@@ -103,6 +87,7 @@ final class AddEvent extends AbstractOrchestratorAddEvent
     }
 
     /**
+     * @return void
      * @throws StringsException
      * @throws FilesystemException
      */
@@ -117,17 +102,21 @@ final class AddEvent extends AbstractOrchestratorAddEvent
     }
 
     /**
+     * @return void
      * @throws ColonyRegistryException
+     * @throws FilesystemException
      * @throws ServiceException
      * @throws StringsException
      */
     private function addReverseProxy(): void
     {
         $aent = $this->reverseProxyServiceRegistry->getAent(ColonyRegistry::TRAEFIK);
-        Aenthill::register($aent->getImage(), DockerComposeContext::REVERSE_PROXY_SERVICE_DEPENDENCY_KEY, $this->bootstrapContext->toArray());
-        $response = Aenthill::runJson(DockerComposeContext::REVERSE_PROXY_SERVICE_DEPENDENCY_KEY, 'ADD_REVERSE_PROXY', []);
-        $payload = \GuzzleHttp\json_decode($response[0], true);
-        $service = Service::parsePayload($payload);
+        $context = Context::fromMetadata();
+        Aenthill::register($aent->getImage(), DockerComposeContext::REVERSE_PROXY_SERVICE_DEPENDENCY_KEY, $context->toArray());
+        $payload = new ReverseProxyAddPayload($this->context->getBaseVirtualHost());
+        $response = Aenthill::runJson(DockerComposeContext::REVERSE_PROXY_SERVICE_DEPENDENCY_KEY, 'ADD_REVERSE_PROXY', $payload->toArray());
+        $assoc = \GuzzleHttp\json_decode($response[0], true);
+        $service = Service::parsePayload($assoc);
         $serializedService = DockerComposeHelper::dockerComposeServiceSerialize($service);
         DockerComposeHelper::mergeContentInDockerComposeFile($serializedService, $this->context->getDockerComposeFilePath(), true);
     }

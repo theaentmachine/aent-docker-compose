@@ -638,16 +638,16 @@
         },
         {
             "name": "php-http/client-common",
-            "version": "1.7.0",
+            "version": "1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-http/client-common.git",
-                "reference": "9accb4a082eb06403747c0ffd444112eda41a0fd"
+                "reference": "949ee8a8cba5fa2abe839c87bf7b885ac3330589"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-http/client-common/zipball/9accb4a082eb06403747c0ffd444112eda41a0fd",
-                "reference": "9accb4a082eb06403747c0ffd444112eda41a0fd",
+                "url": "https://api.github.com/repos/php-http/client-common/zipball/949ee8a8cba5fa2abe839c87bf7b885ac3330589",
+                "reference": "949ee8a8cba5fa2abe839c87bf7b885ac3330589",
                 "shasum": ""
             },
             "require": {
@@ -669,7 +669,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.7-dev"
+                    "dev-master": "1.8-dev"
                 }
             },
             "autoload": {
@@ -695,7 +695,7 @@
                 "http",
                 "httplug"
             ],
-            "time": "2017-11-30T11:06:59+00:00"
+            "time": "2018-06-22T12:36:17+00:00"
         },
         {
             "name": "php-http/discovery",
@@ -1779,12 +1779,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/gulien/aent-console.git",
-                "reference": "5fbb1e3aeea901a9312863c8090f4851b7535822"
+                "reference": "92aad515e51184bb994e4d7b24182cd733af6ee9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/gulien/aent-console/zipball/5fbb1e3aeea901a9312863c8090f4851b7535822",
-                "reference": "5fbb1e3aeea901a9312863c8090f4851b7535822",
+                "url": "https://api.github.com/repos/gulien/aent-console/zipball/92aad515e51184bb994e4d7b24182cd733af6ee9",
+                "reference": "92aad515e51184bb994e4d7b24182cd733af6ee9",
                 "shasum": ""
             },
             "require": {
@@ -1866,20 +1866,20 @@
             "support": {
                 "source": "https://github.com/gulien/aent-console/tree/master"
             },
-            "time": "2018-09-18T12:15:57+00:00"
+            "time": "2018-09-26T14:04:30+00:00"
         },
         {
             "name": "thecodingmachine/safe",
-            "version": "v0.1.4",
+            "version": "v0.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thecodingmachine/safe.git",
-                "reference": "b5446e5a8a92b26c613bb9f76bb16d23bf076445"
+                "reference": "56fcae888155f6ae0070545c5f80505c511598d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thecodingmachine/safe/zipball/b5446e5a8a92b26c613bb9f76bb16d23bf076445",
-                "reference": "b5446e5a8a92b26c613bb9f76bb16d23bf076445",
+                "url": "https://api.github.com/repos/thecodingmachine/safe/zipball/56fcae888155f6ae0070545c5f80505c511598d5",
+                "reference": "56fcae888155f6ae0070545c5f80505c511598d5",
                 "shasum": ""
             },
             "require": {
@@ -1996,7 +1996,7 @@
                 "MIT"
             ],
             "description": "PHP core functions that throw exceptions instead of returning FALSE on error",
-            "time": "2018-09-18T07:41:17+00:00"
+            "time": "2018-09-24T20:24:12+00:00"
         }
     ],
     "packages-dev": [
@@ -4107,16 +4107,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.3.1",
+            "version": "3.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "628a481780561150481a9ec74709092b9759b3ec"
+                "reference": "6ad28354c04b364c3c71a34e4a18b629cc3b231e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/628a481780561150481a9ec74709092b9759b3ec",
-                "reference": "628a481780561150481a9ec74709092b9759b3ec",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/6ad28354c04b364c3c71a34e4a18b629cc3b231e",
+                "reference": "6ad28354c04b364c3c71a34e4a18b629cc3b231e",
                 "shasum": ""
             },
             "require": {
@@ -4154,11 +4154,11 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2018-07-26T23:47:18+00:00"
+            "time": "2018-09-23T23:08:17+00:00"
         },
         {
             "name": "thecodingmachine/phpstan-safe-rule",
-            "version": "dev-master",
+            "version": "v0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thecodingmachine/phpstan-safe-rule.git",

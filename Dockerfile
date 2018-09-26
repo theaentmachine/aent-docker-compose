@@ -9,6 +9,9 @@ RUN composer install --no-dev
 
 FROM theaentmachine/base-php-aent:0.0.24
 
+# Installs Docker Compose.
+RUN pip3 install --upgrade --no-cache-dir docker-compose
+
 # Copies our aent entry point.
 COPY aent.sh /usr/bin/aent
 
