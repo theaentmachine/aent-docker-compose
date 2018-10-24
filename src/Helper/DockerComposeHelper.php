@@ -8,7 +8,6 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 use TheAentMachine\Service\Enum\VolumeTypeEnum;
 use TheAentMachine\Service\Environment\EnvVariable;
-use TheAentMachine\Service\Environment\SharedEnvVariable;
 use TheAentMachine\Service\Service;
 use TheAentMachine\Service\Volume\BindVolume;
 use TheAentMachine\Service\Volume\NamedVolume;
@@ -179,7 +178,7 @@ final class DockerComposeHelper
 
     /**
      * @param Service $service
-     * @return array<string,SharedEnvVariable>
+     * @return array<string,EnvVariable>
      */
     public static function getEnvironmentVariablesForDotEnv(Service $service): array
     {

@@ -57,6 +57,7 @@ final class AddEvent extends AbstractOrchestratorAddEvent
      */
     protected function addDeployJobInCI(ContextInterface $context): ContextInterface
     {
+        $this->prompt->printAltBlock("Docker Compose: adding deploy job in CI/CD...");
         $payload = new DockerComposeDeployJobPayload($this->context->getDockerComposeFilename());
         Aenthill::runJson(DockerComposeContext::CI_DEPENDENCY_KEY, 'DOCKER_COMPOSE_DEPLOY_JOB', $payload->toArray());
         return $this->context;

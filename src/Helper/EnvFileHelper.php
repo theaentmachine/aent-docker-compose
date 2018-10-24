@@ -55,7 +55,7 @@ $key=$value
 ENVVAR;
         }
         $fileSystem = new Filesystem();
-        $fileSystem->dumpFile($this->filePath, $content);
+        $fileSystem->dumpFile($this->filePath, $content ?? '');
         if ($setOwnership) {
             $dirInfo = new \SplFileInfo(\dirname($this->filePath));
             chown($this->filePath, $dirInfo->getOwner());
