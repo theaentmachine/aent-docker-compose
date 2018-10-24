@@ -1,17 +1,24 @@
 <?php
 
+namespace TheAentMachine\AentDockerCompose\Helper;
 
-namespace TheAentMachine\AentDockerCompose\DockerCompose;
-
+use Safe\Exceptions\FilesystemException;
+use Safe\Exceptions\PcreException;
 use Symfony\Component\Filesystem\Filesystem;
+use function \Safe\chown;
+use function \Safe\chgrp;
+use function \Safe\preg_match;
+use function \Safe\file_get_contents;
 
-class EnvFile
+final class EnvFileHelper
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $filePath;
 
+    /**
+     * EnvFileHelper constructor.
+     * @param string $filePath
+     */
     public function __construct(string $filePath)
     {
         $this->filePath = $filePath;
@@ -19,6 +26,12 @@ class EnvFile
 
     /**
      * Adds or updates an environment variable.
+     * @param string $key
+     * @param string $value
+     * @param string|null $comment
+     * @param bool $setOwnership
+     * @throws PcreException
+     * @throws FilesystemException
      */
     public function set(string $key, string $value, string $comment = null, bool $setOwnership = true): void
     {
@@ -35,18 +48,14 @@ class EnvFile
             if ($comment) {
                 $content .= <<<ENVVAR
 $comments
-
 ENVVAR;
             }
             $content .= <<<ENVVAR
 $key=$value
-
 ENVVAR;
         }
-
         $fileSystem = new Filesystem();
-        $fileSystem->dumpFile($this->filePath, $content);
-
+        $fileSystem->dumpFile($this->filePath, $content ?? '');
         if ($setOwnership) {
             $dirInfo = new \SplFileInfo(\dirname($this->filePath));
             chown($this->filePath, $dirInfo->getOwner());
@@ -54,21 +63,28 @@ ENVVAR;
         }
     }
 
+    /**
+     * @param string $envName
+     * @return bool
+     * @throws PcreException
+     * @throws FilesystemException
+     */
     private function has(string $envName): bool
     {
         $content = $this->getContent();
-        return (bool) \preg_match("/^$envName=/m", $content);
+        return (bool) preg_match("/^$envName=/m", $content);
     }
 
+    /**
+     * @return string
+     * @throws FilesystemException
+     */
     private function getContent(): string
     {
         if (!\file_exists($this->filePath)) {
             return '';
         }
-        $content = \file_get_contents($this->filePath);
-        if ($content === false) {
-            throw new \RuntimeException('Unable to read file '.$this->filePath);
-        }
+        $content = file_get_contents($this->filePath);
         return $content;
     }
 }

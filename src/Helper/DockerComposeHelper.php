@@ -1,13 +1,13 @@
 <?php
 
-namespace TheAentMachine\AentDockerCompose\DockerCompose;
+namespace TheAentMachine\AentDockerCompose\Helper;
 
+use Safe\Exceptions\FilesystemException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 use TheAentMachine\Service\Enum\VolumeTypeEnum;
 use TheAentMachine\Service\Environment\EnvVariable;
-use TheAentMachine\Service\Environment\SharedEnvVariable;
 use TheAentMachine\Service\Service;
 use TheAentMachine\Service\Volume\BindVolume;
 use TheAentMachine\Service\Volume\NamedVolume;
@@ -15,10 +15,13 @@ use TheAentMachine\Service\Volume\TmpfsVolume;
 use TheAentMachine\Service\Volume\Volume;
 use TheAentMachine\Yaml\CommentedItem;
 use TheAentMachine\YamlTools\YamlTools;
+use function \Safe\file_get_contents;
+use function \Safe\file_put_contents;
+use function \Safe\unlink;
 
-class DockerComposeService
+final class DockerComposeHelper
 {
-    public const VERSION = '3.3';
+    public const VERSION = '3.7';
 
     /**
      * @param Service $service
@@ -32,7 +35,6 @@ class DockerComposeService
             return $port['source'] . ':' . $port['target'];
         };
         $envMapDockerCompose = self::getEnvironmentVariablesForDockerCompose($service);
-
         $envMap = function (EnvVariable $e) {
             if ($e->getComment() !== null) {
                 return new CommentedItem($e->getValue(), $e->getComment());
@@ -61,17 +63,16 @@ class DockerComposeService
                     'image' => $service->getImage(),
                     'command' => $service->getCommand(),
                     'depends_on' => $service->getDependsOn(),
-                    'ports' => array_map($portMap, $service->getPorts()),
+                    'ports' => \array_map($portMap, $service->getPorts()),
                     'labels' => $service->getLabels(),
-                    'environment' => array_map($envMap, $envMapDockerCompose),
-                    'volumes' => array_map($volumeMap, $service->getVolumes()),
+                    'environment' => \array_map($envMap, $envMapDockerCompose),
+                    'volumes' => \array_map($volumeMap, $service->getVolumes()),
                 ]),
             ],
         ];
         if ($envFileNames) {
             $dockerService['services'][$service->getServiceName()]['env_file'] = $envFileNames;
         }
-
         $namedVolumes = array();
         /** @var Volume $volume */
         foreach ($service->getVolumes() as $volume) {
@@ -88,16 +89,14 @@ class DockerComposeService
 
     /**
      * @param string $pathname
+     * @throws FilesystemException
      */
     public static function checkDockerComposeFileValidity(string $pathname): void
     {
         // We cannot check the env_file directive as it is reading env files that are not available in the temporary directory.
         // Plus we cannot check the depends_on with undefined classes.
         // Therefore, we need to remove the env_file before checking.
-        $strFile = \file_get_contents($pathname);
-        if ($strFile === false) {
-            throw new \RuntimeException('Unable to load file ' . $pathname);
-        }
+        $strFile = file_get_contents($pathname);
         $content = Yaml::parse($strFile);
         if (isset($content['services'])) {
             $services = $content['services'];
@@ -106,8 +105,7 @@ class DockerComposeService
             }
             $content['services'] = $services;
         }
-        \file_put_contents('/tmp/docker-compose-check.yml', YamlTools::dump($content));
-
+        file_put_contents('/tmp/docker-compose-check.yml', YamlTools::dump($content));
         $command = ['docker-compose', '-f', '/tmp/docker-compose-check.yml', 'config', '-q'];
         $process = new Process($command);
         $process->enableOutput();
@@ -119,12 +117,12 @@ class DockerComposeService
         }
     }
 
-
     /**
      * Merge some yaml content into a docker-compose file (and check its validity, by default)
      * @param mixed[]|string $content
      * @param string $file
      * @param bool $checkValidity
+     * @throws FilesystemException
      */
     public static function mergeContentInDockerComposeFile($content, string $file, bool $checkValidity = true): void
     {
@@ -136,33 +134,30 @@ class DockerComposeService
      * @param mixed[]|string $content
      * @param string[] $files
      * @param bool $checkValidity
+     * @throws FilesystemException
      */
     public static function mergeContentInDockerComposeFiles($content, array $files, bool $checkValidity = true): void
     {
         if (\is_array($content)) {
             $content = YamlTools::dump($content);
         }
-
         if ($checkValidity) {
             $fileSystem = new Filesystem();
-            $contentFile = $fileSystem->tempnam(sys_get_temp_dir(), 'docker-compose-content-');
+            $contentFile = $fileSystem->tempnam(\sys_get_temp_dir(), 'docker-compose-content-');
             $fileSystem->dumpFile($contentFile, $content);
-
             $tmpFiles = [];
             foreach ($files as $file) {
-                $tmpFile = $fileSystem->tempnam(sys_get_temp_dir(), 'docker-compose-tmp-');
+                $tmpFile = $fileSystem->tempnam(\sys_get_temp_dir(), 'docker-compose-tmp-');
                 YamlTools::normalizeDockerCompose($file, $tmpFile);
                 YamlTools::mergeTwoFiles($tmpFile, $contentFile);
                 YamlTools::normalizeDockerCompose($tmpFile, $tmpFile);
                 self::checkDockerComposeFileValidity($tmpFile);
                 $tmpFiles[$file] = $tmpFile;
             }
-
             foreach ($files as $file) {
                 $tmpFile = $tmpFiles[$file];
                 $fileSystem->copy($tmpFile, $file, true);
             }
-
             $fileSystem->remove($contentFile);
             $fileSystem->remove($tmpFiles);
         } else {
@@ -174,7 +169,7 @@ class DockerComposeService
 
     /**
      * @param Service $service
-     * @return array<string, EnvVariable>
+     * @return array<string,EnvVariable>
      */
     public static function getEnvironmentVariablesForDockerCompose(Service $service): array
     {
@@ -183,7 +178,7 @@ class DockerComposeService
 
     /**
      * @param Service $service
-     * @return array<string, SharedEnvVariable>
+     * @return array<string,EnvVariable>
      */
     public static function getEnvironmentVariablesForDotEnv(Service $service): array
     {

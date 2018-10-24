@@ -1,87 +1,19 @@
-<h1 align="center">aent-docker-compose</h1>
-<p align="center">TODO</p>
-<p align="center">
-    <a href="https://travis-ci.org/theaentmachine/aent-docker-compose">
-        <img src="https://travis-ci.org/theaentmachine/aent-docker-compose.svg?branch=master" alt="Travis CI">
-    </a>
-    <a href="https://scrutinizer-ci.com/g/theaentmachine/aent-docker-compose/?branch=master">
-        <img src="https://scrutinizer-ci.com/g/theaentmachine/aent-docker-compose/badges/quality-score.png?b=master" alt="Scrutinizer">
-    </a>
-</p>
+![Aenthill](https://avatars0.githubusercontent.com/u/36076306?s=200&u=77022eb3c9b55b54079c1d41a52f605f42ccaff0&v=4 "Aenthill")
 
----
+# aent-docker-compose [![Travis CI](https://travis-ci.org/theaentmachine/aent-docker-compose.svg?branch=master "Travis CI")](https://travis-ci.org/theaentmachine/aent-bootstrap) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/theaentmachine/aent-docker-compose/badges/quality-score.png?b=master "Scrutinizer Code Quality")](https://scrutinizer-ci.com/g/theaentmachine/aent-docker-compose/?branch=master) [![Layers](https://images.microbadger.com/badges/image/theaentmachine/aent-docker-compose.svg)](https://microbadger.com/images/theaentmachine/aent-docker-compose "Layers") [![Version](https://images.microbadger.com/badges/version/theaentmachine/aent-bootstrap.svg)](https://microbadger.com/images/theaentmachine/aent-docker-compose "Version")
 
-## events
+The aent for orchestrating containers with Docker Compose.
 
-### ADD
-`$ aent handle ADD`
+## Usage
 
-todo
+No usage, it is used internally by the [aent-bootstrap](https://github.com/theaentmachine/aent-bootstrap).
 
-### REMOVE
-`$ aent handle REMOVE`
+## Goal
 
-todo
+This aent will:
 
+- create docker-compose.yml files.
 
-### NEW_DOCKER_SERVICE_INFO
-`$ aent handle NEW_DOCKER_SERVICE_INFO {payload}|null`
+## Documentation
 
-Payload format (JSON) :
-```
-{
-  "serviceName" : "foo",                                        //required  
-  "service": {
-    "image"         : "foo/bar:baz",
-    "command"       : ["foo", "-bar", "-baz", "--qux"],
-    "internalPorts" : [1, 2, 3],
-    "dependsOn"     : ["foo", "bar"],
-    "ports"         : [{"source": 80, "target": 8080}],
-    "environment"   : {
-                        "FOO": {
-                          "value": "fooo",                      //required
-                          "type": "sharedEnvVariable|sharedSecret|imageEnvVariable|containerEnvVariable"    //required
-                        },
-                        "BAR": {...}
-                      },
-    "labels"        : {
-                        "foo": {"value": "fooo"},
-                        "bar": {"value": "baar"}
-                      },               
-    "volumes"       : [
-                        {
-                          "type"      : "volume|bind|tmpfs",    //required
-                          "source"    : "foo",                  //required
-                          "target"    : "bar",
-                          "readOnly"  : true|false
-                        }
-                      ],
-    "needVirtualHost": true|false,
-    "needBuild": true|false
-  },
-  "dockerfileCommands": [
-      "FROM foo",
-      "COPY bar",
-      "RUN baz"
-  ],
-  "destEnvTypes": [
-    "DEV|TEST|PROD"
-  ]
-}
-```
-It handles named volumes by adding them inside **volumes** (at root level) in docker-compose.json
-
-TODO: handle case when the service already exists
-
-
-### DELETE-DOCKER-SERVICE
-`$ aent DELETE-DOCKER-SERVICE {payload}`
-
-Payload format (JSON) :
-```
-{
-  "serviceName" : "foo",
-  "namedVolumes" : ["bar"]
-}
-```
-
+You can find the complete documentation at https://aenthill.github.io.
