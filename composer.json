@@ -17,7 +17,7 @@
   ],
   "require": {
     "php": ">=7.1",
-    "theaentmachine/aent-console": "master",
+    "theaentmachine/aent-console": "1.0.x-dev",
     "thecodingmachine/safe": "^0.1.1"
   },
   "require-dev": {
@@ -27,12 +27,6 @@
     "thecodingmachine/phpstan-strict-rules": "^0.10.3",
     "thecodingmachine/phpstan-safe-rule": "^0.1.0@dev"
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/gulien/aent-console"
-    }
-  ],
   "autoload": {
     "psr-4": {
       "TheAentMachine\\AentDockerCompose\\": "src/"
