@@ -2170,12 +2170,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/theaentmachine/aent-console.git",
-                "reference": "9628929281c4aa0eef803813a37494faa899b1fc"
+                "reference": "37f72484a50a723eaa37b01f33f35bcb180d1b3a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/theaentmachine/aent-console/zipball/9628929281c4aa0eef803813a37494faa899b1fc",
-                "reference": "9628929281c4aa0eef803813a37494faa899b1fc",
+                "url": "https://api.github.com/repos/theaentmachine/aent-console/zipball/37f72484a50a723eaa37b01f33f35bcb180d1b3a",
+                "reference": "37f72484a50a723eaa37b01f33f35bcb180d1b3a",
                 "shasum": ""
             },
             "require": {
@@ -2232,7 +2232,7 @@
             ],
             "description": "A utility PHP package to create aents using Symfony console.",
             "homepage": "https://github.com/theaentmachine/aent-console",
-            "time": "2018-10-24T13:56:42+00:00"
+            "time": "2018-10-25T10:49:43+00:00"
         },
         {
             "name": "thecodingmachine/safe",

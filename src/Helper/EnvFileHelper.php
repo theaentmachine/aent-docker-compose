@@ -42,17 +42,21 @@ final class EnvFileHelper
         } else {
             $commentLines = \explode("\n", $comment ?? '');
             $commentLines = \array_map(function (string $line) {
-                return '# '.$line;
+                return '# '. $line;
             }, $commentLines);
             $comments = \implode("\n", $commentLines);
             if ($comment) {
+                $content .= "\n$comments";
+            }
+            $content .= "\n$key=value";
+            /*if ($comment) {
                 $content .= <<<ENVVAR
 $comments
 ENVVAR;
             }
             $content .= <<<ENVVAR
 $key=$value
-ENVVAR;
+ENVVAR;*/
         }
         $fileSystem = new Filesystem();
         $fileSystem->dumpFile($this->filePath, $content ?? '');
